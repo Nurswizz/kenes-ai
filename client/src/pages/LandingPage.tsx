@@ -4,8 +4,8 @@ import logo from "../assets/logo.png";
 import man from "../assets/landing_page_man.png";
 import { MessageCircle, User2, CheckCircle, StarsIcon } from "lucide-react";
 import feedback_logo from "../assets/feedback.svg";
+import memberstackDOM from "@memberstack/dom";
 
-// ----------------- Card Component ------------------
 type CardProps = {
   icon: React.ReactNode;
   header: string;
@@ -28,17 +28,24 @@ const Card = ({ icon, header, description, className }: CardProps) => (
   </div>
 );
 
-// ----------------- Navbar Component ------------------
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const handleStart = async () => {
+    const memberstack = memberstackDOM.init({
+      publicKey: "pk_sb_c9edea5e5ca67eccb3fa",
+      useCookies: true
+    });
+    
+    await memberstack.openModal("SIGNUP");
 
+    memberstack.hideModal();
+  }
   return (
     <nav className="bg-navbar shadow-md w-full absolute top-0 left-0 z-50 flex items-center justify-between px-6 xl:px-40">
       <button onClick={() => (window.location.href = "/")}>
         <img src={logo} alt="logo" width={160} className="xl:w-[200px]" />
       </button>
 
-      {/* Burger Menu */}
       <div className="xl:hidden">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -57,7 +64,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Links */}
       <div
         className={clsx(
           "absolute xl:static top-16 left-0 w-full xl:w-auto bg-navbar xl:bg-transparent transition-all duration-200 z-40",
@@ -79,14 +85,13 @@ const Navbar = () => {
             )
           )}
           <li>
-            <button className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto">
+            <button onClick={() => {handleStart()}} className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto">
               Начать
             </button>
           </li>
         </ul>
       </div>
 
-      {/* Overlay */}
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black opacity-30 z-30 xl:hidden"
@@ -118,7 +123,6 @@ const Feedback = ({
   </div>
 );
 
-// ----------------- Hero Section ------------------
 const HeroSection = () => (
   <header className="flex items-center justify-between w-full px-6 xl:px-40 mt-[200px]">
     <div className="flex flex-col justify-center mt-20 text-left gap-y-8">
@@ -160,7 +164,6 @@ const HeroSection = () => (
   </header>
 );
 
-// ----------------- Features Section ------------------
 const features = [
   {
     icon: <MessageCircle />,
@@ -254,7 +257,9 @@ const FeedbackSection = () => {
   return (
     <section className="flex justify-center bg-[#f8f4f0] p-10">
       <div className="flex flex-col w-[70%]">
-        <h1 className="text-left text-4xl mb-20 text-primary">Отзывы наших пользователей</h1>
+        <h1 className="text-left text-4xl mb-20 text-primary font-semibold">
+          Отзывы наших пользователей
+        </h1>
         <div className="gap-20 lg:grid grid-cols-5 grid-rows-4 max-lg:flex flex-col">
           <Feedback
             className="col-start-1 col-end-3 row-start-1 row-end-3"
@@ -286,7 +291,117 @@ const FeedbackSection = () => {
   );
 };
 
-// ----------------- LandingPage ------------------
+const FaqSection = () => {
+  return (
+    <section className="flex flex-col gap-10 p-40 w-full">
+      <div className="flex flex-col gap-10">
+        <h3 className="text-lg text-primary opacity-50">
+          ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+        </h3>
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl max-w-[900px] font-semibold">
+            Ваши вопросы о нашем юридическом помощнике — с ответами
+          </h1>
+          <p className="text-xl max-w-[900px] opacity-70">
+            Получите чёткие и понятные ответы о том, как использовать наш
+            AI‑сервис для создания официальных документов и общения с
+            госорганами Казахстана.
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-10">
+        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
+          <p className="text-2xl">Для кого предназначена эта платформа?</p>
+          <p className="max-w-[600px] text-2xl">
+            Для всех в Казахстане — граждан, предпринимателей, НПО и
+            организаций.Сервис помогает создавать официальные письма и обращения
+            в госорганы. <strong>Юридическое образование не требуется. </strong>
+          </p>
+        </div>
+        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
+          <p className="text-2xl">Какие документы я могу создать?</p>
+          <p className="max-w-[600px] text-2xl">
+            Формальные письма, жалобы, заявления на субсидии, запросы,
+            предложения и другие официальные документы. Все тексты соответствуют
+            тону и структуре, принятым в казахстанских госорганах.
+          </p>
+        </div>
+        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
+          <p className="text-2xl">
+            Есть ли поддержка казахского и русского языка?
+          </p>
+          <p className="max-w-[600px] text-2xl">
+            Да, платформа работает на двух языках. Документы автоматически
+            адаптируются под официальный стиль и терминологию.
+          </p>
+        </div>
+        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
+          <p className="text-2xl">Нужны ли мне юридические знания?</p>
+          <p className="max-w-[600px] text-2xl">
+            Нет. Платформа ведёт вас шаг за шагом, давая подсказки, формулировки
+            и примеры.Вы просто отвечаете на вопросы и получаете готовый текст.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ComplementarySection = () => {
+  return (
+    <section className="flex justify-between w-full bg-[#f8f4f0] py-20 px-40">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl font-semibold max-w-[650px] text-primary">
+          Создавайте официальные документы за минуты
+        </h1>
+        <p className="text-2xl max-w-[650px] opacity-70">
+          Генерируйте письма, обращения и запросы на казахском или русском
+          —готовые к отправке в государственные органы и организации.
+        </p>
+      </div>
+      <div className="flex flex-col justify-center gap-5">
+        <button className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white font-semibold transition hover:bg-[#6d7487] w-full xl:w-auto">
+          Начать
+        </button>
+        <button
+          className="text-primary p-4 px-8 rounded-3xl font-medium text-lg border-2 transition-all hover:border-primary"
+          style={{
+            boxShadow: "0 0 0 2px transparent",
+            borderColor: "currentColor",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.boxShadow = "0 0 0 2px currentColor")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.boxShadow = "0 0 0 2px transparent")
+          }
+        >
+          Посмотреть возможности
+        </button>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => {
+    return (
+        <footer className="w-full flex justify-between">
+            <div>
+                <img src={logo} alt="logo" />
+                <div>
+                    <ul>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </footer>
+    )
+}
+
+
 const LandingPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -295,6 +410,8 @@ const LandingPage = () => {
       <FeaturesSection />
       <SubscriptionSection />
       <FeedbackSection />
+      <FaqSection />
+      <ComplementarySection />
     </div>
   );
 };
