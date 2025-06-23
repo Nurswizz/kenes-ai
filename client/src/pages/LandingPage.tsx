@@ -4,12 +4,81 @@ import logo from "../assets/logo.png";
 import man from "../assets/landing_page_man.png";
 import { MessageCircle, User2, CheckCircle, StarsIcon } from "lucide-react";
 import feedback_logo from "../assets/feedback.svg";
+import memberstack from "@memberstack/dom";
+import useApi from "../hooks/useApi";
 
 type CardProps = {
   icon: React.ReactNode;
   header: string;
   description: string;
   className?: string;
+};
+
+const handleStart = async () => {
+  const api = useApi();
+  const memberstackInstance = await memberstack.init({
+    publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY,
+    useCookies: true,
+  });
+  
+  console.log(await memberstackInstance.getCurrentMember());
+  if((await memberstackInstance.getCurrentMember()).data) {
+    window.location.href = "/dashboard";
+    return;
+
+  }
+  const result = await memberstackInstance.openModal("SIGNUP", {
+    signup: {
+      plans: ["pln_free--pei105l3"],
+    },
+  });
+
+  if (
+    result &&
+    typeof result === "object" &&
+    "data" in result &&
+    "type" in result
+  ) {
+
+    const member = await memberstackInstance.getCurrentMember();
+
+    type MemberData = {
+      id?: string;
+      email?: string;
+      customFields?: {
+        firstName?: string;
+        lastName?: string;
+        [key: string]: any;
+      };
+      auth?: {
+        email?: string;
+        [key: string]: any;
+      };
+      [key: string]: any;
+    };
+
+    const memberDataObj = member?.data as MemberData | undefined;
+   
+    const memberData = {
+      id: memberDataObj?.id,
+      email: memberDataObj?.auth?.email,
+      firstName: memberDataObj?.customFields?.["first-name"],
+      lastName: memberDataObj?.customFields?.["last-name"],
+      memberstackId: memberDataObj?.id,
+    };
+    localStorage.setItem("user", JSON.stringify(memberData));
+
+    await api.fetchData("/auth/sync-member", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(memberData),
+    });
+
+    memberstackInstance.hideModal();
+    window.location.href = "/dashboard";
+  }
 };
 
 const Card = ({ icon, header, description, className }: CardProps) => (
@@ -74,7 +143,12 @@ const Navbar = () => {
             )
           )}
           <li>
-            <button onClick={() => window.location.href = "/signup"} className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto">
+            <button
+              onClick={() => {
+                handleStart();
+              }}
+              className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto"
+            >
               Начать
             </button>
           </li>
@@ -126,7 +200,7 @@ const HeroSection = () => (
         ссылаться на нужные законы.
       </h3>
       <div className="flex gap-x-5">
-        <button onClick={() => window.location.href = "/signup"} className="bg-primary text-[#ffffff] p-4 px-8 rounded-3xl text-white font-medium text-lg transition hover:bg-[#6d7487]">
+        <button className="bg-primary text-[#ffffff] p-4 px-8 rounded-3xl text-white font-medium text-lg transition hover:bg-[#6d7487]">
           Начать работу
         </button>
         <button
@@ -219,7 +293,7 @@ const SubscriptionSection = () => {
           <h3 className="text-2xl opacity-75">
             Подходит для индивидуальных пользователей и небольших команд
           </h3>
-          <button onClick={() => window.location.href = "/signup"} className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
+          <button className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
             Начать сейчас
           </button>
           <h3 className="text-xl opacity-60">Без долгосрочных обязательств</h3>
@@ -229,7 +303,7 @@ const SubscriptionSection = () => {
           <h1 className="text-5xl">₸9,000/мес</h1>
           <h3 className="text-2xl opacity-75">Идеально для бизнеса и НПО </h3>
           <div className="flex flex-col gap-y-3 relative bottom-[-25px]">
-            <button onClick={() => window.location.href = "/signup"} className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
+            <button className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
               Выбрать тариф
             </button>
             <h3 className="text-xl opacity-60 mt-4">
@@ -349,7 +423,10 @@ const ComplementarySection = () => {
         </p>
       </div>
       <div className="flex flex-col justify-center gap-5">
-        <button onClick={() => window.location.href = "/signup"} className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white font-semibold transition hover:bg-[#6d7487] w-full xl:w-auto">
+        <button
+          onClick={() => (window.location.href = "/signup")}
+          className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white font-semibold transition hover:bg-[#6d7487] w-full xl:w-auto"
+        >
           Начать
         </button>
         <button
@@ -373,23 +450,22 @@ const ComplementarySection = () => {
 };
 
 const Footer = () => {
-    return (
-        <footer className="w-full flex justify-between">
-            <div>
-                <img src={logo} alt="logo" />
-                <div>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </div>
-            </div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </footer>
-    )
-}
-
+  return (
+    <footer className="w-full flex justify-between">
+      <div>
+        <img src={logo} alt="logo" />
+        <div>
+          <ul>
+            <li></li>
+          </ul>
+        </div>
+      </div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </footer>
+  );
+};
 
 const LandingPage = () => {
   return (
