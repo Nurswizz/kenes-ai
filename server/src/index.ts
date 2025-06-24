@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoute";
+import aiRoutes from "./routes/aiRoute";
 import cors from "cors";
 
 dotenv.config();
@@ -26,7 +27,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use("/api", authRoutes);
-
+app.use("/api", aiRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

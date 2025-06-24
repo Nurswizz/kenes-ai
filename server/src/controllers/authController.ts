@@ -1,6 +1,5 @@
 import {Request, Response} from "express";
 import { User, PLAN } from "../models/User";
-import memberstackAdmin from "@memberstack/admin";
 import dotenv from "dotenv";
 dotenv.config();
 
