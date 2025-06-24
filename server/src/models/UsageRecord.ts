@@ -1,8 +1,13 @@
 import { Schema, model, Document } from "mongoose";
 
+const feature = {
+  letter: "LETTER", 
+  style: "STYLE",
+  chat: "CHAT",
+}
 interface IUsageRecord {
   userId: string;
-  featureKey: string;
+  featureKey: keyof typeof feature; 
   usedAt: Date;
 }
 
@@ -14,5 +19,5 @@ const usageRecordSchema = new Schema<IUsageRecord>({
 
 const UsageRecord = model<IUsageRecord>("UsageRecord", usageRecordSchema);
 
-export { UsageRecord, IUsageRecord };
+export { UsageRecord, IUsageRecord, feature };
 

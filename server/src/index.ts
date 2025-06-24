@@ -7,7 +7,6 @@ import cors from "cors";
 
 dotenv.config();
 
-// Connect to MongoDB
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/kenes-ai";
 
 mongoose

@@ -2,11 +2,12 @@ import { Request, Response } from "express";
 import { aiService } from "../services/aiService";
 import { User, PLAN } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
+
 const chat = async (
   req: Request & { user?: { id: string } },
   res: Response
 ): Promise<any> => {
-  const { message } = req.body;
+  const { message, chatId } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
