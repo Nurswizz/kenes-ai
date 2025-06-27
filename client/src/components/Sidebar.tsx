@@ -12,6 +12,7 @@ const Sidebar = () => {
         <a href="/tools/style-checker" className="hover:text-[#5c5c5c] transition-all">Style Checker</a>
         <a href="/tools/advisor" className="hover:text-[#5c5c5c] transition-all">Advisor Chat</a>
         <a href="/tools/simulator" className="hover:text-[#5c5c5c] transition-all">Simulator Chat</a>
+        <a href="/account" className="hover:text-[#5c5c5c] transition-all">Account</a>
       </div>
     </div>
   );

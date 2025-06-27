@@ -1,7 +1,7 @@
 const useApi = () => {
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiUrl = import.meta.env.VITE_API_URL!;
     
-    const fetchData = async (endpoint: string, options: RequestInit = {}) => {
+    const fetchData = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
         try {
         const response = await fetch(`${apiUrl}${endpoint}`, {
             ...options,
@@ -16,9 +16,12 @@ const useApi = () => {
         }
     
         return await response.json();
-        } catch (error) {
+        } catch (error: unknown) {
         console.error('Fetch error:', error);
-        throw error;
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error(String(error));
         }
     };
     

@@ -14,18 +14,17 @@ type CardProps = {
   className?: string;
 };
 
-const handleStart = async () => {
-  const api = useApi();
+const handleStart = async <T = unknown,>(
+  fetchData: (endpoint: string, options?: RequestInit) => Promise<T>
+) => {
   const memberstackInstance = await memberstack.init({
     publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY,
     useCookies: true,
   });
-  
   console.log(await memberstackInstance.getCurrentMember());
-  if((await memberstackInstance.getCurrentMember()).data) {
+  if ((await memberstackInstance.getCurrentMember()).data) {
     window.location.href = "/dashboard";
     return;
-
   }
   const result = await memberstackInstance.openModal("SIGNUP", {
     signup: {
@@ -39,8 +38,8 @@ const handleStart = async () => {
     "data" in result &&
     "type" in result
   ) {
-
     const member = await memberstackInstance.getCurrentMember();
+    console.log(member);
 
     type MemberData = {
       id?: string;
@@ -48,17 +47,17 @@ const handleStart = async () => {
       customFields?: {
         firstName?: string;
         lastName?: string;
-        [key: string]: any;
+        [key: string]: unknown;
       };
       auth?: {
         email?: string;
-        [key: string]: any;
+        [key: string]: unknown;
       };
-      [key: string]: any;
+      [key: string]: unknown;
     };
 
     const memberDataObj = member?.data as MemberData | undefined;
-   
+
     const memberData = {
       id: memberDataObj?.id,
       email: memberDataObj?.auth?.email,
@@ -68,16 +67,20 @@ const handleStart = async () => {
     };
     localStorage.setItem("user", JSON.stringify(memberData));
 
-    await api.fetchData("/auth/sync-member", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(memberData),
-    });
-
-    memberstackInstance.hideModal();
-    window.location.href = "/dashboard";
+    if (result.type === "signup") {
+      await fetchData("/auth/sync-member", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(memberData),
+      });
+    }
+    if (memberData.id) {
+      window.location.href = "/dashboard";
+    } else {
+      console.error("Member data is not available");
+    }
   }
 };
 
@@ -98,6 +101,7 @@ const Card = ({ icon, header, description, className }: CardProps) => (
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { fetchData } = useApi();
   return (
     <nav className="bg-navbar shadow-md w-full absolute top-0 left-0 z-50 flex items-center justify-between px-6 xl:px-40">
       <button onClick={() => (window.location.href = "/")}>
@@ -145,7 +149,7 @@ const Navbar = () => {
           <li>
             <button
               onClick={() => {
-                handleStart();
+                handleStart(fetchData);
               }}
               className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto"
             >
@@ -449,23 +453,23 @@ const ComplementarySection = () => {
   );
 };
 
-const Footer = () => {
-  return (
-    <footer className="w-full flex justify-between">
-      <div>
-        <img src={logo} alt="logo" />
-        <div>
-          <ul>
-            <li></li>
-          </ul>
-        </div>
-      </div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </footer>
-  );
-};
+// const Footer = () => {
+//   return (
+//     <footer className="w-full flex justify-between">
+//       <div>
+//         <img src={logo} alt="logo" />
+//         <div>
+//           <ul>
+//             <li></li>
+//           </ul>
+//         </div>
+//       </div>
+//       <div></div>
+//       <div></div>
+//       <div></div>
+//     </footer>
+//   );
+// };
 
 const LandingPage = () => {
   return (
