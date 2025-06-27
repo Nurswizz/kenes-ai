@@ -32,7 +32,7 @@ const chat = async (
   }
 
   try {
-    const response = await aiService.chatAdvisor(message);
+    const response = await aiService.chatAdvisor(message, chatId);
     if (!response || !response.answer) {
       return res.status(500).json({ error: "No response from chat advisor" });
     }

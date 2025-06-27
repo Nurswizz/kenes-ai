@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { aiController } from "../controllers/aiController";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { planMiddleware } from "../middlewares/planMiddleware";
 const router = Router();
 
-router.post("/tools/chat-advisor", authMiddleware, aiController.chatAdvisor);
-router.post("/tools/style-check", authMiddleware, aiController.checkStyle);
+router.post("/tools/chat-advisor", authMiddleware, planMiddleware, aiController.chatAdvisor);
+router.post("/tools/style-check", authMiddleware, planMiddleware, aiController.checkStyle);
 
 export default router;

@@ -13,11 +13,6 @@ const userService = {
         createdAt: -1,
       })
       .limit(5);
-    const user = await User.findById(userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
 
     return {
       usageRecords,
@@ -48,6 +43,33 @@ const userService = {
     }
 
     return chat;
+  },
+
+  async getUserById(userId: string) {
+    if (!userId) {
+      throw new Error("No User Id given");
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  },
+  async getUserByMemberStackId(memberstackId: string ) {
+    if (!memberstackId) {
+      throw new Error("No Memberstack ID provided");
+    }
+    
+    const user = await User.findOne({memberstackId});
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user; 
   },
 
   async createChat(userId: string, chatName: string) {
@@ -95,7 +117,5 @@ const userService = {
 
     return message;
   },
-
-
 };
 export { userService };

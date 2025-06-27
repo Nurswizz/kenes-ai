@@ -2,6 +2,27 @@ import { Request, Response } from "express";
 import { userService } from "../services/userService";
 
 export const userController = {
+  getUser: async (
+    req: Request,
+    res: Response
+  ): Promise<any> => {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ message: "Memberstack ID is required" });
+    }
+    try {
+      const user = await userService.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      return res.status(200).json(user);
+    } catch (error: any) {
+      console.error("Error getting user:", error);
+      return res
+        .status(500)
+        .json({ message: error.message || "Internal server error" });
+    }
+  },
   getUsage: async (
     req: Request & { user?: { id: string } },
     res: Response
@@ -102,7 +123,7 @@ export const userController = {
     res: Response
   ): Promise<any> => {
     const userId = req.user?.id;
-    const { chatId, messageContent} = req.body;
+    const { chatId, messageContent } = req.body;
 
     if (!userId) {
       return res

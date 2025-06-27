@@ -1,22 +1,30 @@
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import memberstack from "@memberstack/dom";
+import { useMemberstack } from "../context/MemberstackProvider";
+import { preconnect } from "react-dom";
 
 const Account = () => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  if (user == "{}") {
-    window.location.href = "/";
-    return;
-  }
+  const [user, setUser] = useState<any>(null);
+  const memberstack = useMemberstack();
 
+  useEffect(() => {
+    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!localUser || Object.keys(localUser).length === 0) {
+      window.location.href = "/";
+    } else {
+      setUser(localUser);
+    }
+  }, []);
+  useEffect(() => {
+    preconnect(import.meta.env.VITE_API_URL);
+  }, []);
   const handleLogOut = async () => {
-    const memberstackInstance = await memberstack.init({
-      publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY,
-      useCookies: true,
-    });
-
-    memberstackInstance.logout();
-    window.location.href = "/"
+    await memberstack.logout();
+    localStorage.removeItem("user");
+    window.location.href = "/";
   };
+
+  if (!user) return <div className="text-center p-10">Loading...</div>;
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -27,6 +35,7 @@ const Account = () => {
             <p>First Name: {user.firstName}</p>
             <p>Last Name: {user.lastName}</p>
             <p>Email: {user.email}</p>
+            <p>Plan: {user.plan}</p>
             <button
               className="bg-[#ce3333] text-white px-4 py-2 mt-4 rounded max-w-32"
               type="button"

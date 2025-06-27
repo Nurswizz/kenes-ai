@@ -1,9 +1,9 @@
 import { Schema, model, Document } from "mongoose";
 
 const feature = {
-  letter: "LETTER", 
-  style: "STYLE",
-  chat: "CHAT",
+  letter: "letter", 
+  style: "style",
+  chat: "chat",
 }
 interface IUsageRecord {
   userId: string;

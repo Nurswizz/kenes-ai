@@ -21,7 +21,7 @@ const chatAdvisor = async (message: string, chatId: string) => {
         },
       }
     );
-    
+
     await userService.addMessageToChat(chatId, message, "user");
     await userService.addMessageToChat(chatId, response.data.reply, "model");
 

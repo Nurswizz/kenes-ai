@@ -4,7 +4,7 @@ import logo from "../assets/logo.png";
 import man from "../assets/landing_page_man.png";
 import { MessageCircle, User2, CheckCircle, StarsIcon } from "lucide-react";
 import feedback_logo from "../assets/feedback.svg";
-import memberstack from "@memberstack/dom";
+import { useMemberstack } from "../context/MemberstackProvider";
 import useApi from "../hooks/useApi";
 
 type CardProps = {
@@ -15,13 +15,9 @@ type CardProps = {
 };
 
 const handleStart = async <T = unknown,>(
-  fetchData: (endpoint: string, options?: RequestInit) => Promise<T>
+  fetchData: (endpoint: string, options?: RequestInit) => Promise<T>,
+  memberstackInstance: any
 ) => {
-  const memberstackInstance = await memberstack.init({
-    publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY,
-    useCookies: true,
-  });
-  console.log(await memberstackInstance.getCurrentMember());
   if ((await memberstackInstance.getCurrentMember()).data) {
     window.location.href = "/dashboard";
     return;
@@ -39,11 +35,11 @@ const handleStart = async <T = unknown,>(
     "type" in result
   ) {
     const member = await memberstackInstance.getCurrentMember();
-    console.log(member);
 
     type MemberData = {
       id?: string;
-      email?: string;
+      email: string;
+      planConnections?: { type?: string }[];
       customFields?: {
         firstName?: string;
         lastName?: string;
@@ -64,6 +60,7 @@ const handleStart = async <T = unknown,>(
       firstName: memberDataObj?.customFields?.["first-name"],
       lastName: memberDataObj?.customFields?.["last-name"],
       memberstackId: memberDataObj?.id,
+      plan: memberDataObj?.planConnections?.[0]?.type
     };
     localStorage.setItem("user", JSON.stringify(memberData));
 
@@ -102,6 +99,7 @@ const Card = ({ icon, header, description, className }: CardProps) => (
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { fetchData } = useApi();
+  const memberstack = useMemberstack();
   return (
     <nav className="bg-navbar shadow-md w-full absolute top-0 left-0 z-50 flex items-center justify-between px-6 xl:px-40">
       <button onClick={() => (window.location.href = "/")}>
@@ -149,7 +147,7 @@ const Navbar = () => {
           <li>
             <button
               onClick={() => {
-                handleStart(fetchData);
+                handleStart(fetchData, memberstack);
               }}
               className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto"
             >
