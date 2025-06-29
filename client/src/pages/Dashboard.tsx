@@ -11,30 +11,32 @@ interface IUsageRecord {
   usedAt: Date;
 }
 
-interface UsageCardProps {
+interface IFeature {
   title: string;
-  data: IUsageRecord[];
+  num?: string;
 }
-
-const UsageCard: React.FC<UsageCardProps> = ({ title, data }) => {
+interface IActivity {
+  title: string;
+  date: Date;
+  id: string;
+}
+const Feature = ({ title, num = "Loading" }: IFeature) => {
   return (
-    <div className="flex flex-col items-center bg-secondary p-4 rounded-lg">
-      <h2 className="text-xl font-semibold">{title} Usage</h2>
-      <p className="text-2xl">
-        {data.length} {data.length === 1 ? "time" : "times"}
-      </p>
-      <ul className="mt-2 text-sm text-gray-700">
-        {data.length > 0 ? (
-          data.map((rec, idx) => (
-            <li key={idx}>
-              {new Date(rec.usedAt).toLocaleDateString()}{" "}
-              {new Date(rec.usedAt).toLocaleTimeString()}
-            </li>
-          ))
-        ) : (
-          <li className="italic">No records</li>
-        )}
-      </ul>
+    <div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 p-2">
+      <div className="w-full h-[120px] px-6 py-4 rounded-xl shadow-md bg-[#dfdfdf] flex flex-col justify-center">
+        <h3 className="text-base md:text-lg text-gray-700">{title}</h3>
+        <h1 className="text-2xl md:text-3xl font-semibold text-primary">
+          {num}
+        </h1>
+      </div>
+    </div>
+  );
+};
+const Activity = ({ title, date, id }: IActivity) => {
+  return (
+    <div className="w-full flex flex-col hover:bg-[#cdcdcd] cursor-pointer p-3 rounded-lg transition-colors">
+      <h1>{title}</h1>
+      <h3>{date.toUTCString()}</h3>
     </div>
   );
 };
@@ -95,35 +97,25 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col lg:flex-row h-full lg:h-screen">
       <Sidebar />
-      <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-5 p-24">
-        <div className="col-span-4 row-span-1">
-          <h1 className="text-5xl font-semibold text-primary ">
-            Welcome back, {user.firstName || 'there'}!
-          </h1>
+      <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
+        <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+
+        {/* Features */}
+        <div className="flex flex-wrap -mx-2">
+          <Feature title="Letters Drafted" num="12" />
+          <Feature title="Style Checks" num="12" />
+          <Feature title="Chat Uses" num="12" />
         </div>
 
-        <div className="col-span-2 row-span-4 row-start-2 col-start-1 bg-navbar rounded-2xl flex flex-col items-center shadow-2xl transition-all hover:scale-105">
-          <h1 className="text-3xl p-4 font-semibold">Usage for last month</h1>
-          <div className="grid grid-cols-3 gap-4 w-full px-4">
-            {isLoading ? (
-              <div className="col-span-3 text-center">Loading...</div>
-            ) : (
-              ["letter", "style", "chat"].map((key) => (
-                <UsageCard
-                  key={key}
-                  title={key.charAt(0).toUpperCase() + key.slice(1)}
-                  data={categorizedUsage[key] || []}
-                />
-              ))
-            )}
+        {/* Recent Activity */}
+        <div className="flex flex-col gap-3 mt-6">
+          <h1 className="text-3xl sm:text-4xl font-bold">Recent Activity</h1>
+          <div className="flex flex-col gap-5 mb-12">
+            <Activity title="Letter Generation" date={new Date()} id="1" />
+            <Activity title="Style Check" date={new Date()} id="2" />
           </div>
-        </div>
-
-        <div className="col-span-2 row-span-4 row-start-2 col-start-3 bg-navbar rounded-2xl flex flex-col items-center shadow-2xl transition-all hover:scale-105">
-          <h1 className="text-3xl p-4 font-semibold">Recent Actions</h1>
-          <div className="p-4 italic text-gray-400">Coming soon...</div>
         </div>
       </div>
     </div>

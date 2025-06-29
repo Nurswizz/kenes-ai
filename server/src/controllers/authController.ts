@@ -11,8 +11,8 @@ export const authController = {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res
-          .status(400)
-          .json({ message: "User already exists", ok: false, status: 400 });
+          .status(200)
+          .json({ message: "User already exists", ok: true, status: 200 });
       }
 
       const newUser = new User({

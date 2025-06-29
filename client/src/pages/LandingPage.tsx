@@ -64,15 +64,13 @@ const handleStart = async <T = unknown,>(
     };
     localStorage.setItem("user", JSON.stringify(memberData));
 
-    if (result.type === "signup") {
-      await fetchData("/auth/sync-member", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(memberData),
-      });
-    }
+    await fetchData("/auth/sync-member", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(memberData),
+    });
     if (memberData.id) {
       window.location.href = "/dashboard";
     } else {
