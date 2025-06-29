@@ -99,12 +99,12 @@ const Dashboard = () => {
       <Sidebar />
       <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-5 p-24">
         <div className="col-span-4 row-span-1">
-          <h1 className="text-4xl font-semibold text-primary">
-            Hello, {user.firstName}!
+          <h1 className="text-5xl font-semibold text-primary ">
+            Welcome back, {user.firstName || 'there'}!
           </h1>
         </div>
 
-        <div className="col-span-2 row-span-4 row-start-2 col-start-1 bg-navbar rounded-2xl flex flex-col items-center">
+        <div className="col-span-2 row-span-4 row-start-2 col-start-1 bg-navbar rounded-2xl flex flex-col items-center shadow-2xl transition-all hover:scale-105">
           <h1 className="text-3xl p-4 font-semibold">Usage for last month</h1>
           <div className="grid grid-cols-3 gap-4 w-full px-4">
             {isLoading ? (
@@ -121,7 +121,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="col-span-2 row-span-4 row-start-2 col-start-3 bg-navbar rounded-2xl flex flex-col items-center">
+        <div className="col-span-2 row-span-4 row-start-2 col-start-3 bg-navbar rounded-2xl flex flex-col items-center shadow-2xl transition-all hover:scale-105">
           <h1 className="text-3xl p-4 font-semibold">Recent Actions</h1>
           <div className="p-4 italic text-gray-400">Coming soon...</div>
         </div>

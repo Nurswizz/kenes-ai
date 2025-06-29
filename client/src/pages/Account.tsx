@@ -37,7 +37,7 @@ const Account = () => {
             <p>Email: {user.email}</p>
             <p>Plan: {user.plan}</p>
             <button
-              className="bg-[#ce3333] text-white px-4 py-2 mt-4 rounded max-w-32"
+              className="bg-[#ce3333] text-[#ffffff] px-4 py-2 mt-4 rounded max-w-32 hover:bg-[#b32c2c] transition-all"
               type="button"
               onClick={handleLogOut}
             >

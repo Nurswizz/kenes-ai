@@ -60,7 +60,7 @@ const handleStart = async <T = unknown,>(
       firstName: memberDataObj?.customFields?.["first-name"],
       lastName: memberDataObj?.customFields?.["last-name"],
       memberstackId: memberDataObj?.id,
-      plan: memberDataObj?.planConnections?.[0]?.type
+      plan: memberDataObj?.planConnections?.[0]?.type,
     };
     localStorage.setItem("user", JSON.stringify(memberData));
 
@@ -188,46 +188,53 @@ const Feedback = ({
   </div>
 );
 
-const HeroSection = () => (
-  <header className="flex items-center justify-between w-full px-6 xl:px-40 mt-[200px]">
-    <div className="flex flex-col justify-center mt-20 text-left gap-y-8">
-      <h1 className="max-sm:text-3xl text-primary text-7xl font-bold">
-        Говорим с властью
-      </h1>
-      <h3 className="max-sm:text-sm text-xl text-primary max-w-[700px]">
-        Создавайте официальные письма, обращения и запросы на казахском или
-        русском — за считанные минуты.
-        <br />
-        Kenes AI помогает правильно сформулировать идею, соблюсти стиль и
-        ссылаться на нужные законы.
-      </h3>
-      <div className="flex gap-x-5">
-        <button className="bg-primary text-[#ffffff] p-4 px-8 rounded-3xl text-white font-medium text-lg transition hover:bg-[#6d7487]">
-          Начать работу
-        </button>
-        <button
-          className="text-primary p-4 px-8 rounded-3xl font-medium text-lg border-2 transition-all hover:border-primary"
-          style={{
-            boxShadow: "0 0 0 2px transparent",
-            borderColor: "currentColor",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 0 2px currentColor")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 0 2px transparent")
-          }
-        >
-          Посмотреть функцию
-        </button>
+const HeroSection = () => {
+  const { fetchData } = useApi();
+  const memberstack = useMemberstack();
+  return (
+    <header className="flex items-center justify-between w-full px-6 xl:px-40 mt-[200px]">
+      <div className="flex flex-col justify-center mt-20 text-left gap-y-8">
+        <h1 className="max-sm:text-3xl text-primary text-7xl font-bold">
+          Говорим с властью
+        </h1>
+        <h3 className="max-sm:text-sm text-xl text-primary max-w-[700px]">
+          Создавайте официальные письма, обращения и запросы на казахском или
+          русском — за считанные минуты.
+          <br />
+          Kenes AI помогает правильно сформулировать идею, соблюсти стиль и
+          ссылаться на нужные законы.
+        </h3>
+        <div className="flex gap-x-5">
+          <button
+            onClick={() => handleStart(fetchData, memberstack)}
+            className="bg-primary text-[#ffffff] p-4 px-8 rounded-3xl text-white font-medium text-lg transition hover:bg-[#6d7487]"
+          >
+            Начать работу
+          </button>
+          <button
+            className="text-primary p-4 px-8 rounded-3xl font-medium text-lg border-2 transition-all hover:border-primary"
+            style={{
+              boxShadow: "0 0 0 2px transparent",
+              borderColor: "currentColor",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.boxShadow = "0 0 0 2px currentColor")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.boxShadow = "0 0 0 2px transparent")
+            }
+          >
+            Посмотреть функцию
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div className="ml-10 rounded-lg shadow-lg overflow-hidden hidden xl:block">
-      <img src={man} alt="man" width={300} />
-    </div>
-  </header>
-);
+      <div className="ml-10 rounded-lg shadow-lg overflow-hidden hidden xl:block">
+        <img src={man} alt="man" width={300} />
+      </div>
+    </header>
+  );
+};
 
 const features = [
   {
@@ -283,6 +290,8 @@ const FeaturesSection = () => (
 );
 
 const SubscriptionSection = () => {
+  const { fetchData } = useApi();
+  const memberstack = useMemberstack();
   return (
     <section className="mt-10 flex flex-col items-center w-full gap-y-20">
       <h1 className="text-7xl font-semibold text-primary text-center">
@@ -295,7 +304,10 @@ const SubscriptionSection = () => {
           <h3 className="text-2xl opacity-75">
             Подходит для индивидуальных пользователей и небольших команд
           </h3>
-          <button className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
+          <button
+            onClick={() => handleStart(fetchData, memberstack)}
+            className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg"
+          >
             Начать сейчас
           </button>
           <h3 className="text-xl opacity-60">Без долгосрочных обязательств</h3>
@@ -305,7 +317,10 @@ const SubscriptionSection = () => {
           <h1 className="text-5xl">₸9,000/мес</h1>
           <h3 className="text-2xl opacity-75">Идеально для бизнеса и НПО </h3>
           <div className="flex flex-col gap-y-3 relative bottom-[-25px]">
-            <button className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg">
+            <button
+              onClick={() => handleStart(fetchData, memberstack)}
+              className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg"
+            >
               Выбрать тариф
             </button>
             <h3 className="text-xl opacity-60 mt-4">
@@ -413,6 +428,8 @@ const FaqSection = () => {
 };
 
 const ComplementarySection = () => {
+  const { fetchData } = useApi();
+  const memberstack = useMemberstack();
   return (
     <section className="flex justify-between w-full bg-[#f8f4f0] py-20 px-40">
       <div className="flex flex-col gap-3">
@@ -426,7 +443,7 @@ const ComplementarySection = () => {
       </div>
       <div className="flex flex-col justify-center gap-5">
         <button
-          onClick={() => (window.location.href = "/signup")}
+          onClick={() => handleStart(fetchData, memberstack)}
           className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white font-semibold transition hover:bg-[#6d7487] w-full xl:w-auto"
         >
           Начать
