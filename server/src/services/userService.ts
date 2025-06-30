@@ -1,6 +1,7 @@
 import { User } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
 import { Chat, Message } from "../models/Chat";
+import { feature } from "../models/UsageRecord";
 
 const userService = {
   async getUsage(userId: string) {
@@ -58,18 +59,18 @@ const userService = {
 
     return user;
   },
-  async getUserByMemberStackId(memberstackId: string ) {
+  async getUserByMemberStackId(memberstackId: string) {
     if (!memberstackId) {
       throw new Error("No Memberstack ID provided");
     }
-    
-    const user = await User.findOne({memberstackId});
+
+    const user = await User.findOne({ memberstackId });
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    return user; 
+    return user;
   },
 
   async createChat(userId: string, chatName: string) {
@@ -116,6 +117,20 @@ const userService = {
     await chat.save();
 
     return message;
+  },
+  async addUsageRecord(userId: string, featureKey: string) {
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+
+    const usageRecord = new UsageRecord({
+      userId,
+      featureKey,
+      usedAt: new Date(),
+    });
+
+    await usageRecord.save();
+    return usageRecord;
   },
 };
 export { userService };

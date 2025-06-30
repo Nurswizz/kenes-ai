@@ -3,15 +3,23 @@ import memberstack from "@memberstack/dom";
 
 const MemberstackContext = createContext<any>(null);
 
-export const MemberstackProvider = ({ children }: { children: React.ReactNode }) => {
+export const MemberstackProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [ms, setMs] = useState<any>(null);
 
   useEffect(() => {
-    const msInstance = memberstack.init({
-      publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY!,
-      useCookies: true,
-    });
-    setMs(msInstance);
+    const initMemberstack = async () => {
+      const msInstance = await memberstack.init({
+        publicKey: import.meta.env.VITE_MEMBERSTACK_PUBLIC_KEY!,
+        useCookies: true,
+      });
+      setMs(msInstance);
+    };
+
+    initMemberstack();
   }, []);
 
   return (
@@ -24,3 +32,8 @@ export const MemberstackProvider = ({ children }: { children: React.ReactNode })
 export const useMemberstack = () => {
   return useContext(MemberstackContext);
 };
+
+export const useMemberstackReady = () => {
+  const ms = useMemberstack();
+  return ms !== null && typeof ms.getMemberCookie === "function";
+}

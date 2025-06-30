@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { aiService } from "../services/aiService";
 import { User, PLAN } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
+import { userService } from "../services/userService";
 
 const chat = async (
   req: Request & { user?: { id: string } },
@@ -43,9 +44,7 @@ const chat = async (
 
       const usageRecord = new UsageRecord({
         userId: user._id,
-        type: "chat",
-        message: message,
-        response: response.answer,
+        featureKey: "chat",
       });
       await usageRecord.save();
     }
@@ -95,6 +94,7 @@ const styleCheck = async (
     if (!response) {
       return res.status(500).json({ error: "No response from style check" });
     }
+    await userService.addUsageRecord(userId, "style");
     return res.status(200).json({ result: response });
   } catch (error: any) {
     console.error("Error in styleCheck:", error);

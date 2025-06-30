@@ -43,6 +43,22 @@ const checkStyle = async (message: string) => {
 4. Структура письма должна включать: вежливое вступление, чёткую формулировку цели, логичное развитие и корректное завершение.
 5. Язык письма должен быть ориентирован на профессионалов: никаких сокращений, сленга или жаргона (если это не допустимо в отрасли).
 6. Если письмо предполагает просьбу, требование или предложение — должно быть соблюдено уважительное и корректное оформление.
+7. Письмо должно быть на языке, соответствующем целевой аудитории (например, на русском или английском).
+8. Структурируй ответ в виде JSON-объекта с полями:
+\`\`\`json
+{
+  "isFormal": true,
+  "isPolite": true,
+  "isConcise": true,
+  "hasCorrectGrammar": true,
+  "hasCorrectSpelling": true,
+  "hasCorrectPunctuation": true,
+  "hasClearStructure": true,
+  "isProfessionalLanguage": true,
+  "isRespectfulTone": true,
+  "refinedMessage": "Переписанное письмо, если оно не соответствует стилю"
+}
+\`\`\`
 
 ---
 
@@ -63,8 +79,8 @@ const checkStyle = async (message: string) => {
       messages: ms as any[],
       max_tokens: 1000,
     });
-
-    return response;
+    console.log("Response from OpenAI:", response);
+    return JSON.parse(response.choices[0].message.content || "{}");
   } catch (error: any) {
     console.error("Error in checkStyle:", error);
     throw new Error("Failed to check style");
