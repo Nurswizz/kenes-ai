@@ -41,16 +41,7 @@ const LetterBuilder = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-lg font-semibold mb-1">Subject</label>
-              <input
-                type="text"
-                className="border-2 border-gray-300 p-2 rounded-lg"
-                placeholder="Enter subject"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-lg font-semibold mb-1">Message</label>
+              <label className="text-lg font-semibold mb-1">Details</label>
               <textarea
                 className="border-2 border-gray-300 p-2 rounded-lg h-40 resize-none"
                 placeholder="Write your message here"

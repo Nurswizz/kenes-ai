@@ -6,5 +6,7 @@ const router = Router();
 
 router.post("/tools/chat-advisor", authMiddleware, planMiddleware, aiController.chatAdvisor);
 router.post("/tools/style-check", authMiddleware, planMiddleware, aiController.checkStyle);
+router.post("/tools/generate-letter", authMiddleware, planMiddleware, aiController.generateLetter);
+
 
 export default router;

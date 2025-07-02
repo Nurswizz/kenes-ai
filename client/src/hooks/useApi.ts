@@ -13,6 +13,7 @@ const useApi = () => {
 
       if (memberstack && typeof memberstack.getMemberCookie === "function") {
         token = await memberstack.getMemberCookie();
+        console.log("Memberstack token:", token);
       }
 
       const headers: Record<string, string> = {

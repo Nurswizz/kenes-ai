@@ -3,11 +3,13 @@ import Sidebar from "../components/Sidebar";
 import { useMemberstack } from "../context/MemberstackProvider";
 import { preconnect } from "react-dom";
 import { LoaderCircle } from "lucide-react";
+import useApi from "../hooks/useApi";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
   const memberstack = useMemberstack();
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
+  const {fetchData} = useApi();
 
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -16,6 +18,7 @@ const Account = () => {
     } else {
       setUser(localUser);
     }
+
   }, []);
   useEffect(() => {
     preconnect(import.meta.env.VITE_API_URL);
@@ -27,6 +30,27 @@ const Account = () => {
     setLoading(false);
     window.location.href = "/";
   };
+
+  const handleUpgrade = async () => {
+    const planId = import.meta.env.VITE_PLAN_PRO_ID;
+    if (!planId) {
+      console.error("Plan ID is not defined in environment variables.");
+      return;
+    }
+    try {
+      // checkout and upgrading through memberstack
+
+      await fetchData("/users/plan", {
+        method: "PUT",
+        body: JSON.stringify({ plan: "Pro" }),
+      });
+    } catch (error) {
+      console.error("Error upgrading plan:", error);
+      alert("An error occurred while upgrading. Please try again later.");
+    }
+  }
+
+
 
   if (!user) return <div className="text-center p-10">Loading...</div>;
   return (
@@ -48,6 +72,13 @@ const Account = () => {
           <h1 className="text-2xl font-semibold">Phone number</h1>
           <h3>{user.phone ? user.phone : "None"}</h3>
         </div>
+        <div className="mt-4">
+          <h1 className="text-2xl font-semibold">Plan</h1>
+          <h3>{user.plan ? user.plan : "Free"}</h3>
+        </div>
+        <button onClick={handleUpgrade} className="mt-4 bg-navbar py-2 px-4 rounded w-[150px]">
+          Upgrade to Pro
+        </button>
         <button className="mt-4 bg-navbar py-2 px-4 rounded w-[100px]">
           Edit
         </button>

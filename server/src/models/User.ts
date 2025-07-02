@@ -1,9 +1,9 @@
 import { Schema, model, Document } from "mongoose";
 
 const PLAN = {
-  FREE: "free",
-  PRO: "pro",
-  ENTERPRISE: "enterprise",
+  FREE: "Free",
+  PRO: "Pro",
+  ENTERPRISE: "Enterprise",
 };
 interface IUser extends Document {
   firstName: string;

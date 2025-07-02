@@ -12,8 +12,7 @@ const userService = {
     const usageRecords = await UsageRecord.find({ userId })
       .sort({
         createdAt: -1,
-      })
-      .limit(5);
+      });
 
     return {
       usageRecords,
@@ -131,6 +130,21 @@ const userService = {
 
     await usageRecord.save();
     return usageRecord;
+  },
+  async updateUserPlan(userId: string, plan: string) {
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    user.plan = plan;
+    await user.save();
+
+    return user;
   },
 };
 export { userService };

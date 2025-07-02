@@ -3,33 +3,57 @@ import useApi from "../hooks/useApi";
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+
+interface IResponse {
+  isFormal: boolean;
+  isPolite: boolean;
+  isConcise: boolean;
+  hasCorrectGrammar: boolean;
+  hasCorrectSpelling: boolean;
+  hasCorrectPunctuation: boolean;
+  hasClearStructure: boolean;
+  isProfessionalLanguage: boolean;
+  isRespectfulTone: boolean;
+  refinedMessage: string;
+}
+
+interface IResult {
+  result: IResponse;
+}
 
 const StyleChecker = () => {
   const { fetchData } = useApi();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [response, setResponse] = useState<IResponse | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.stopPropagation();
     e.preventDefault();
+    setError(null);
+
     const formData = new FormData(e.target as HTMLFormElement);
     const text = formData.get("text") as string;
 
     try {
-      const response = await fetchData("/tools/style-check", {
+      const response: IResult = await fetchData("/tools/style-check", {
         method: "POST",
         body: JSON.stringify({ message: text, feature: "style" }),
       });
-      if (response.status == 403) {
-        setError("You have no style check trials left. Please upgrade to Pro.");
-      }
-      alert("Style check completed successfully!");
-      console.log(response);
-    } catch (error) {
-      console.error("Error checking style:", error);
-      if (error instanceof Error) {
-        setError(error.message);
-
+      console.log(response.result);
+      setResponse(response.result);
+    } catch (err: unknown) {
+      if (
+        (err as any)?.message?.includes("403") ||
+        (err as any)?.status === 403
+      ) {
+        setError("You have no trials for this feature, upgrade to Pro Plan");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unknown error occurred");
       }
     } finally {
       setLoading(false);
@@ -64,9 +88,28 @@ const StyleChecker = () => {
                   "Check Style"
                 )}
               </button>
-              {error && (
-                <div className="text-red-500 mt-2">
-                  Error: {error}
+              {error && <div className="text-[red] mt-2">Error: {error}</div>}
+              {/* Display results here if needed */}
+              {response && (
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                  <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
+                  <ul className="list-disc pl-5">
+                    <li>Formal: {response.isFormal ? "Yes" : "No"} {response.isFormal ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Polite: {response.isPolite ? "Yes" : "No"} {response.isPolite ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Concise: {response.isConcise ? "Yes" : "No"} {response.isConcise ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Correct Grammar: {response.hasCorrectGrammar ? "Yes" : "No"} {response.hasCorrectGrammar ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Correct Spelling: {response.hasCorrectSpelling ? "Yes" : "No"} {response.hasCorrectSpelling ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Correct Punctuation: {response.hasCorrectPunctuation ? "Yes" : "No"} {response.hasCorrectPunctuation ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Clear Structure: {response.hasClearStructure ? "Yes" : "No"} {response.hasClearStructure ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Professional Language: {response.isProfessionalLanguage ? "Yes" : "No"} {response.isProfessionalLanguage ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>Respectful Tone: {response.isRespectfulTone ? "Yes" : "No"} {response.isRespectfulTone ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                  </ul>
+                  {response.refinedMessage && (
+                    <div className="mt-4">
+                      <h3 className="font-semibold">Refined Message:</h3>
+                      <p>{response.refinedMessage}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

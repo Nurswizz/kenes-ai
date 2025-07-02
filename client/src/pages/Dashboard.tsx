@@ -94,7 +94,7 @@ const Dashboard = () => {
           id: `${rec.userId}-${rec.featureKey}-${rec.usedAt}`,
         }));
         setCategorizedUsage(grouped);
-        setRecentActivity(recent);
+        setRecentActivity(recent.reverse().slice(0, 5));
       } catch (err) {
         console.error("Failed to fetch usage data:", err);
       } finally {

@@ -145,4 +145,32 @@ export const userController = {
         .json({ error: error.message || "Internal server error" });
     }
   },
+
+  updatePlan: async (
+    req: Request & { user?: { id: string } },
+    res: Response
+  ): Promise<any> => {
+    const userId = req.user?.id;
+    const { plan } = req.body;
+
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User not logged in" });
+    }
+
+    if (!plan) {
+      return res.status(400).json({ error: "Plan is required" });
+    }
+
+    try {
+      const updatedUser = await userService.updateUserPlan(userId, plan);
+      return res.status(200).json(updatedUser);
+    } catch (error: any) {
+      console.error("Error updating plan:", error);
+      return res
+        .status(500)
+        .json({ error: error.message || "Internal server error" });
+    }
+  }
 };

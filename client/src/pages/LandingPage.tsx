@@ -24,7 +24,7 @@ const handleStart = async <T = unknown,>(
   }
   const result = await memberstackInstance.openModal("SIGNUP", {
     signup: {
-      plans: ["pln_free--pei105l3"],
+      plans: [import.meta.env.VITE_PLAN_FREE_ID!],
     },
   });
 
@@ -71,6 +71,7 @@ const handleStart = async <T = unknown,>(
       },
       body: JSON.stringify(memberData),
     });
+
     if (memberData.id) {
       window.location.href = "/dashboard";
     } else {

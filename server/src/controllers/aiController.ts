@@ -3,6 +3,7 @@ import { aiService } from "../services/aiService";
 import { User, PLAN } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
 import { userService } from "../services/userService";
+import { letterService } from "../services/letterService";
 
 const chat = async (
   req: Request & { user?: { id: string } },
@@ -20,10 +21,6 @@ const chat = async (
     return res.status(404).json({ error: "User not found" });
   }
 
-  if ((user.chatTrials ?? 0) <= 0 && user.plan !== PLAN.PRO) {
-    return res.status(403).json({ error: "Forbidden: No trials left" });
-  }
-
   if (typeof message !== "string" || message.trim() === "") {
     return res.status(400).json({ error: "Invalid message format" });
   }
@@ -38,16 +35,11 @@ const chat = async (
       return res.status(500).json({ error: "No response from chat advisor" });
     }
 
-    if (user.plan !== PLAN.PRO) {
-      user.chatTrials = (user.chatTrials ?? 0) - 1;
-      await user.save();
-
-      const usageRecord = new UsageRecord({
-        userId: user._id,
-        featureKey: "chat",
-      });
-      await usageRecord.save();
-    }
+    const usageRecord = new UsageRecord({
+      userId: user._id,
+      featureKey: "chat",
+    });
+    await usageRecord.save();
 
     return res.status(200).json(response);
   } catch (error: any) {
@@ -74,13 +66,6 @@ const styleCheck = async (
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
-
-  if ((user.styleTrials ?? 0) <= 0 && user.plan !== PLAN.PRO) {
-    return res
-      .status(403)
-      .json({ error: "Forbidden: No style check trials left" });
-  }
-
   if (typeof message !== "string" || message.trim() === "") {
     return res.status(400).json({ error: "Invalid message format" });
   }
@@ -104,7 +89,44 @@ const styleCheck = async (
   }
 };
 
+const generateLetter = async (
+  req: Request & { user?: { id: string } },
+  res: Response
+): Promise<any> => {
+  const { details, recipient } = req.body;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User not logged in" });
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  if (typeof details !== "string" || details.trim() === "") {
+    return res.status(400).json({ error: "Invalid details format" });
+  }
+
+  if (!recipient) {
+    return res.status(400).json({ error: "Recipient is required" });
+  }
+
+  try {
+    const pdf = await letterService.generateLetter(details, recipient);
+
+    await userService.addUsageRecord(userId, "letter");
+    
+    return res.status(200).json({ pdf });
+  } catch (error: any) {
+    console.error("Error in generateLetter:", error);
+    return res.status(500).json({ error: "Failed to generate letter" });
+  }
+};
+
 export const aiController = {
   chatAdvisor: chat,
   checkStyle: styleCheck,
+  generateLetter: generateLetter,
 };
