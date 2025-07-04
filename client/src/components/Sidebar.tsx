@@ -13,8 +13,8 @@ const navItems = [
   { label: "Dashboard", icon: <Home />, path: "/dashboard" },
   { label: "Letter", icon: <File />, path: "/tools/letter-builder" },
   { label: "Style", icon: <Search />, path: "/tools/style-checker" },
-  { label: "Advisor", icon: <MessageCircle />, path: "/tools/advisor-chat" },
-  { label: "Sim Chat", icon: <Bot />, path: "/tools/simulator-chat" },
+  { label: "Advisor", icon: <MessageCircle />, path: "/tools/advisor" },
+  { label: "Sim Chat", icon: <Bot />, path: "/tools/simulator" },
 ];
 
 const Sidebar = () => {
@@ -61,18 +61,19 @@ const Sidebar = () => {
 
       {/* Mobile Navbar */}
       <div className="lg:hidden bg-[white] fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 z-50 flex justify-around py-2">
-        {[...navItems, { label: "Account", icon: <UserCircle />, path: "/account" }].map(
-          ({ label, icon, path }) => (
-            <button
-              key={label}
-              onClick={() => handleRedirect(path)}
-              className="flex flex-col items-center text-sm text-gray-800 hover:text-black"
-            >
-              {icon}
-              <span className="text-xs">{label}</span>
-            </button>
-          )
-        )}
+        {[
+          ...navItems,
+          { label: "Account", icon: <UserCircle />, path: "/account" },
+        ].map(({ label, icon, path }) => (
+          <button
+            key={label}
+            onClick={() => handleRedirect(path)}
+            className="flex flex-col items-center text-sm text-gray-800 hover:text-black"
+          >
+            {icon}
+            <span className="text-xs">{label}</span>
+          </button>
+        ))}
       </div>
     </>
   );

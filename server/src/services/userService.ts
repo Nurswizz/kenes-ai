@@ -1,6 +1,6 @@
 import { User } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
-import { Chat, Message } from "../models/Chat";
+
 import { feature } from "../models/UsageRecord";
 
 const userService = {
@@ -17,32 +17,6 @@ const userService = {
     return {
       usageRecords,
     };
-  },
-  async getChats(userId: string) {
-    if (!userId) {
-      throw new Error("Unauthorized: User not logged in");
-    }
-
-    const chats = await Chat.find({ userId }).sort({ createdAt: -1 });
-
-    if (!chats) {
-      throw new Error("No chats found for this user");
-    }
-
-    return chats;
-  },
-  async getChatById(userId: string, chatId: string) {
-    if (!userId) {
-      throw new Error("Unauthorized: User not logged in");
-    }
-
-    const chat = await Chat.findOne({ userId, id: chatId });
-
-    if (!chat) {
-      throw new Error("Chat not found");
-    }
-
-    return chat;
   },
 
   async getUserById(userId: string) {
@@ -72,52 +46,8 @@ const userService = {
     return user;
   },
 
-  async createChat(userId: string, chatName: string) {
-    if (!userId) {
-      throw new Error("Unauthorized: User not logged in");
-    }
-
-    const chat = new Chat({
-      name: chatName,
-      userId,
-      messages: [],
-    });
-
-    await chat.save();
-    return chat;
-  },
-
-  async addMessageToChat(
-    chatId: string,
-    messageContent: string,
-    role: "user" | "model"
-  ) {
-    if (!chatId || !messageContent || !role) {
-      throw new Error("Invalid input for adding message to chat");
-    }
-
-    const message = new Message({
-      chatId,
-      content: messageContent,
-      role,
-    });
-
-    await message.save();
-
-    const chat = await Chat.findById(chatId);
-    if (!chat) {
-      throw new Error("Chat not found");
-    }
-
-    if (!chat.messages) {
-      chat.messages = [];
-    }
-    chat.messages.push(message);
-    await chat.save();
-
-    return message;
-  },
-  async addUsageRecord(userId: string, featureKey: string) {
+  
+  async addUsageRecord(userId: string, featureKey: string,  meta?: Record<string, any>) {
     if (!userId) {
       throw new Error("Unauthorized: User not logged in");
     }
@@ -126,7 +56,9 @@ const userService = {
       userId,
       featureKey,
       usedAt: new Date(),
+      meta: meta || {},
     });
+
 
     await usageRecord.save();
     return usageRecord;

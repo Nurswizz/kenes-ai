@@ -4,12 +4,13 @@ import { User, PLAN } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
 import { userService } from "../services/userService";
 import { letterService } from "../services/letterService";
+import { chatService } from "../services/chatService";
 
-const chat = async (
+const chatWithAdvisor = async (
   req: Request & { user?: { id: string } },
   res: Response
 ): Promise<any> => {
-  const { message, chatId } = req.body;
+  const { message } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
@@ -30,10 +31,17 @@ const chat = async (
   }
 
   try {
-    const response = await aiService.chatAdvisor(message, chatId);
-    if (!response || !response.answer) {
+    const response = await aiService.chatAdvisor(message);
+    if (!response || !response.reply) {
       return res.status(500).json({ error: "No response from chat advisor" });
     }
+    let chat = await chatService.getAdvisorChatByUserId(userId);
+    if (!chat) {
+      chat = await chatService.createAdvisorChat(userId);
+    }
+    const chatId = chat!._id;
+    await chatService.addMessageToChat(chatId, message, "user", "advisor");
+    await chatService.addMessageToChat(chatId, response.reply, "bot", "advisor");
 
     const usageRecord = new UsageRecord({
       userId: user._id,
@@ -93,7 +101,7 @@ const generateLetter = async (
   req: Request & { user?: { id: string } },
   res: Response
 ): Promise<any> => {
-  const { details, recipient } = req.body;
+  const { details, recipient, sender } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
@@ -113,11 +121,24 @@ const generateLetter = async (
     return res.status(400).json({ error: "Recipient is required" });
   }
 
-  try {
-    const pdf = await letterService.generateLetter(details, recipient);
+  if (!sender) {
+    return res.status(400).json({ error: "Sender is required" });
+  }
 
-    await userService.addUsageRecord(userId, "letter");
-    
+  try {
+    const pdf = await letterService.generateLetter(details, recipient, sender);
+
+    const letter = await letterService.saveLetter({
+      id: pdf.id,
+      userId: userId,
+      pdf_url: pdf.pdf_url,
+    });
+
+    await userService.addUsageRecord(userId, "letter", {
+      letterId: pdf.id,
+      pdf_url: pdf.pdf_url,
+    });
+
     return res.status(200).json({ pdf });
   } catch (error: any) {
     console.error("Error in generateLetter:", error);
@@ -126,7 +147,7 @@ const generateLetter = async (
 };
 
 export const aiController = {
-  chatAdvisor: chat,
+  chatAdvisor: chatWithAdvisor,
   checkStyle: styleCheck,
   generateLetter: generateLetter,
 };

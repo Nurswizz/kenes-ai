@@ -1,43 +1,62 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
+import type { ObjectId } from "mongoose";
 
-interface IMessage {
-    id: string;
-    chatId: string; 
-    content: string;
-    role: "user" | "model"
-    createdAt: Date;
-    updatedAt: Date;
+interface IChatMessage {
+  _id: ObjectId;
+  from: "system" | "user" | "bot";
+  text: string;
+  chatId: ObjectId;
+  chatType: "advisor" | "simulator";
+  createdAt: Date;
+  meta?: Record<string, any>;
 }
 
-interface IChat {
-    id: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string; 
-    messages?: IMessage[];
+interface IAdvisorChat {
+  _id: ObjectId;
+  userId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const messageSchema = new Schema<IMessage>({
-    id: { type: String, required: true },
-    chatId: { type: String, required: true },
-    content: { type: String, required: true },
-    role: {type: String, required: true},
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+interface ISimulatorChat {
+  _id: ObjectId;
+  userId: ObjectId;
+  scenario: string;
+  isCompleted: boolean;
+  startedAt: Date;
+  endedAt?: Date;
+}
+
+const chatMessageSchema = new Schema<IChatMessage>({
+  from: { type: String, enum: ["system", "user", "bot"], required: true },
+  chatId: { type: Schema.Types.ObjectId, refPath: "chatType", required: true },
+  chatType: { type: String, enum: ["advisor", "simulator"], required: true },
+  text: {type: String, required: true},
+  createdAt: { type: Date, default: Date.now },
+  meta: { type: Object, default: {} },
+});
+const advisorChatSchema = new Schema<IAdvisorChat>({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+const simulatorChatSchema = new Schema<ISimulatorChat>({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  scenario: { type: String, required: true },
+  isCompleted: { type: Boolean, default: false },
+  startedAt: { type: Date, default: Date.now },
+  endedAt: { type: Date },
 });
 
-const chatSchema = new Schema<IChat>({
-    id: { type: String, required: true },
-    name: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-    userId: { type: String, required: true }, 
-    messages: [messageSchema]
-});
+const ChatMessage = model<IChatMessage>("ChatMessage", chatMessageSchema);
+const AdvisorChat = model<IAdvisorChat>("AdvisorChat", advisorChatSchema);
+const SimulatorChat = model<ISimulatorChat>("SimulatorChat", simulatorChatSchema);
 
-const Chat = model<IChat>('Chat', chatSchema);
-const Message = model<IMessage>('Message', messageSchema);
-
-export { Chat, Message, IChat, IMessage };
-
+export {
+  IChatMessage,
+  IAdvisorChat,
+  ISimulatorChat,
+  ChatMessage,
+  AdvisorChat,
+  SimulatorChat
+};

@@ -92,17 +92,142 @@ const StyleChecker = () => {
               {/* Display results here if needed */}
               {response && (
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                  <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
+                  <h2 className="text-xl font-semibold mb-2">
+                    Analysis Result
+                  </h2>
                   <ul className="list-disc pl-5">
-                    <li>Formal: {response.isFormal ? "Yes" : "No"} {response.isFormal ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Polite: {response.isPolite ? "Yes" : "No"} {response.isPolite ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Concise: {response.isConcise ? "Yes" : "No"} {response.isConcise ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Correct Grammar: {response.hasCorrectGrammar ? "Yes" : "No"} {response.hasCorrectGrammar ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Correct Spelling: {response.hasCorrectSpelling ? "Yes" : "No"} {response.hasCorrectSpelling ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Correct Punctuation: {response.hasCorrectPunctuation ? "Yes" : "No"} {response.hasCorrectPunctuation ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Clear Structure: {response.hasClearStructure ? "Yes" : "No"} {response.hasClearStructure ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Professional Language: {response.isProfessionalLanguage ? "Yes" : "No"} {response.isProfessionalLanguage ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
-                    <li>Respectful Tone: {response.isRespectfulTone ? "Yes" : "No"} {response.isRespectfulTone ? <CheckCircle color="green" className="inline h-4 w-4 text-green-500" /> : <XCircle color="red" className="inline h-4 w-4 text-red-500" />}</li>
+                    <li>
+                      Formal: {response.isFormal ? "Yes" : "No"}{" "}
+                      {response.isFormal ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Polite: {response.isPolite ? "Yes" : "No"}{" "}
+                      {response.isPolite ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Concise: {response.isConcise ? "Yes" : "No"}{" "}
+                      {response.isConcise ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Correct Grammar:{" "}
+                      {response.hasCorrectGrammar ? "Yes" : "No"}{" "}
+                      {response.hasCorrectGrammar ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Correct Spelling:{" "}
+                      {response.hasCorrectSpelling ? "Yes" : "No"}{" "}
+                      {response.hasCorrectSpelling ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Correct Punctuation:{" "}
+                      {response.hasCorrectPunctuation ? "Yes" : "No"}{" "}
+                      {response.hasCorrectPunctuation ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Clear Structure:{" "}
+                      {response.hasClearStructure ? "Yes" : "No"}{" "}
+                      {response.hasClearStructure ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Professional Language:{" "}
+                      {response.isProfessionalLanguage ? "Yes" : "No"}{" "}
+                      {response.isProfessionalLanguage ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
+                    <li>
+                      Respectful Tone:{" "}
+                      {response.isRespectfulTone ? "Yes" : "No"}{" "}
+                      {response.isRespectfulTone ? (
+                        <CheckCircle
+                          color="green"
+                          className="inline h-4 w-4 text-green-500"
+                        />
+                      ) : (
+                        <XCircle
+                          color="red"
+                          className="inline h-4 w-4 text-red-500"
+                        />
+                      )}
+                    </li>
                   </ul>
                   {response.refinedMessage && (
                     <div className="mt-4">

@@ -10,6 +10,9 @@ interface IUsageRecord {
   userId: string;
   featureKey: FeatureKey;
   usedAt: Date;
+  meta?: {
+    pdf_url?: string;
+  };
 }
 
 interface IFeature {
@@ -21,6 +24,9 @@ interface IActivity {
   title: string;
   date: Date;
   id: string;
+  meta?: {
+    pdf_url?: string;
+  };
 }
 
 const Feature = ({ title, num }: IFeature) => {
@@ -37,9 +43,13 @@ const Feature = ({ title, num }: IFeature) => {
   );
 };
 
-const Activity = ({ title, date }: IActivity) => {
+const Activity = ({ title, date, meta }: IActivity) => {
+  
   return (
-    <div className="w-full flex flex-col hover:bg-[#cdcdcd] cursor-pointer p-3 rounded-lg transition-colors">
+    <div
+      onClick={() => meta?.pdf_url && window.open(meta.pdf_url, "_blank")}
+      className="w-full flex flex-col hover:bg-[#cdcdcd] cursor-pointer p-3 rounded-lg transition-colors"
+    >
       <h1>{title}</h1>
       <h3>{date.toUTCString()}</h3>
     </div>
@@ -88,13 +98,20 @@ const Dashboard = () => {
             chat: [],
           } as Record<FeatureKey, IUsageRecord[]>
         );
-        const recent = usageData.usageRecords.slice(0, 5).map((rec) => ({
-          title: `Used ${rec.featureKey} feature`,
-          date: new Date(rec.usedAt),
-          id: `${rec.userId}-${rec.featureKey}-${rec.usedAt}`,
-        }));
+        // show the latest 5 records overall
+
+        const recent = usageData.usageRecords
+          .reverse()
+          .slice(0, 5)
+          .map((rec) => ({
+            title: `Used ${rec.featureKey} feature`,
+            date: new Date(rec.usedAt),
+            id: `${rec.userId}-${rec.featureKey}-${rec.usedAt}`,
+            meta: rec.meta || {},
+          }));
+
         setCategorizedUsage(grouped);
-        setRecentActivity(recent.reverse().slice(0, 5));
+        setRecentActivity(recent);
       } catch (err) {
         console.error("Failed to fetch usage data:", err);
       } finally {
@@ -114,6 +131,8 @@ const Dashboard = () => {
   const letterCount = categorizedUsage.letter.length;
   const styleCount = categorizedUsage.style.length;
   const chatCount = categorizedUsage.chat.length;
+
+
 
   return (
     <div className="flex flex-col lg:flex-row h-full lg:h-screen">
@@ -139,6 +158,7 @@ const Dashboard = () => {
                   key={activity.id}
                   title={activity.title}
                   date={activity.date}
+                  meta={activity.meta}
                 />
               ))
             ) : (
