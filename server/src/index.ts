@@ -6,6 +6,9 @@ import aiRoutes from "./routes/aiRoute";
 import userRoutes from "./routes/userRouter";
 import chatRouter from "./routes/chatRouter"
 import cors from "cors";
+import { prettyMorgan } from "./utils/morgan";
+
+import "./jobs/montrhlyReset";
 
 dotenv.config();
 
@@ -26,6 +29,7 @@ app.use(cors({origin: process.env.CORS_ORIGIN, credentials: true, optionsSuccess
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(prettyMorgan);
 
 app.use("/api", authRoutes);
 app.use("/api", aiRoutes);

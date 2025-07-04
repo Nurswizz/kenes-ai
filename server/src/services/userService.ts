@@ -9,10 +9,9 @@ const userService = {
       throw new Error("Unauthorized: User not logged in");
     }
 
-    const usageRecords = await UsageRecord.find({ userId })
-      .sort({
-        createdAt: -1,
-      });
+    const usageRecords = await UsageRecord.find({ userId }).sort({
+      createdAt: -1,
+    });
 
     return {
       usageRecords,
@@ -46,8 +45,11 @@ const userService = {
     return user;
   },
 
-  
-  async addUsageRecord(userId: string, featureKey: string,  meta?: Record<string, any>) {
+  async addUsageRecord(
+    userId: string,
+    featureKey: string,
+    meta?: Record<string, any>
+  ) {
     if (!userId) {
       throw new Error("Unauthorized: User not logged in");
     }
@@ -58,7 +60,6 @@ const userService = {
       usedAt: new Date(),
       meta: meta || {},
     });
-
 
     await usageRecord.save();
     return usageRecord;
@@ -77,6 +78,29 @@ const userService = {
     await user.save();
 
     return user;
+  },
+
+  async resetUsersAllTrials() {
+    const users = await User.find({ plan: { $ne: "Pro" } });
+
+    const updates = users.map((user) => ({
+      updateOne: {
+        filter: { _id: user._id },
+        update: {
+          $set: {
+            letterTrials: 3,
+            chatTrials: 3,
+            styleTrials: 3,
+          },
+        },
+      },
+    }));
+
+    if (updates.length > 0) {
+      await User.bulkWrite(updates);
+    }
+
+    return updates.length;
   },
 };
 export { userService };

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import useApi from "../hooks/useApi";
 import ReactMarkdown from "react-markdown";
+import rehypeSanitize from "rehype-sanitize";
 import { useMemberstackReady } from "../context/MemberstackProvider";
 import { LoaderCircle } from "lucide-react";
 
@@ -21,16 +22,45 @@ const AdvisorChat = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const { fetchData } = useApi();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const isMemberstackReady = useMemberstackReady();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-  console.log(messages);
+  function decodeHtmlEntities(text: string): string {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = text;
+    return txt.value;
+  }
+
+  function prepareMarkdown(text: string): string {
+    let decoded = decodeHtmlEntities(text);
+
+    decoded = decoded.replace(/<br\s*\/?>/gi, "  \n");
+
+    const keywords = [
+      "Юридическая оценка",
+      "Применимое законодательство",
+      "Практика",
+      "Применение закона",
+      "Источники",
+      "Құқықтық бағалау",
+      "Қолданылатын заңнама",
+      "Тәжірибе", 
+      "Заң қолдану", 
+      "Дереккөздер"
+    ];
+
+    for (const word of keywords) {
+      const regex = new RegExp(`(?<!\\*)(${word})(?!\\*)`, "g");
+      decoded = decoded.replace(regex, "**$1**");
+    }
+
+    return decoded;
+  }
+
   useEffect(() => {
     if (!isMemberstackReady) return;
 
@@ -44,11 +74,16 @@ const AdvisorChat = () => {
         console.error("Failed to fetch messages:", err);
       } finally {
         setInitialLoading(false);
+        inputRef.current?.focus();
       }
     };
 
     fetchInitMessages();
   }, [isMemberstackReady]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async (text: string) => {
     const trimmedText = text.trim();
@@ -83,7 +118,7 @@ const AdvisorChat = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {initialLoading ? (
               <div className="flex justify-center items-center">
-                <LoaderCircle />
+                <LoaderCircle className="animate-spin" />
               </div>
             ) : (
               <>
@@ -96,9 +131,22 @@ const AdvisorChat = () => {
                         : "bg-[#cdcdcd] self-start"
                     }`}
                   >
-                    {msg.text.replace(/<br\s*\/?>/gi, "\n")}
+                    <div
+                      className={`prose max-w-none text-sm ${
+                        msg.from === "user" ? "text-white" : "text-black"
+                      }`}
+                    >
+                      <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
+                        {prepareMarkdown(msg.text)}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 ))}
+                {loading && (
+                  <div className="p-3 rounded-md w-fit max-w-[80%] bg-[#cdcdcd] self-start italic opacity-70">
+                    Bot is typing...
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </>
             )}
@@ -107,6 +155,7 @@ const AdvisorChat = () => {
           {/* Input */}
           <div className="p-4 border-t flex items-center gap-2">
             <input
+              ref={inputRef}
               type="text"
               value={inputText}
               placeholder="Type your message..."
