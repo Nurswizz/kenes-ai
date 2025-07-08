@@ -175,14 +175,16 @@ const Feedback = ({
   header: string;
   description: string;
   author: string;
-  className: string;
+  className?: string;
 }) => (
-  <div className={className}>
-    <h1 className="text-2xl font-semibold">{header}</h1>
-    <h3 className="text-lg">{description}</h3>
-    <div className="mt-5 flex gap-5">
-      <h3 className="text-sm font-bold">— {author}</h3>
-      <img src={feedback_logo} alt="360LAB" />
+  <div className={`p-6 bg-white rounded-xl shadow-md ${className}`}>
+    <h1 className="text-xl sm:text-2xl font-semibold mb-3">{header}</h1>
+    <p className="text-base sm:text-lg text-gray-700">{description}</p>
+    <div className="mt-5 flex items-center gap-4 flex-wrap">
+      <span className="text-sm sm:text-base font-bold text-gray-900">
+        — {author}
+      </span>
+      <img src={feedback_logo} alt="360LAB" className="h-6 w-auto" />
     </div>
   </div>
 );
@@ -190,38 +192,29 @@ const Feedback = ({
 const HeroSection = () => {
   const { fetchData } = useApi();
   const memberstack = useMemberstack();
+
   return (
-    <header className="flex items-center justify-between w-full px-6 xl:px-40 mt-[200px]">
-      <div className="flex flex-col justify-center mt-20 text-left gap-y-8">
-        <h1 className="max-sm:text-3xl text-primary text-7xl font-bold">
+    <header className="flex flex-col-reverse xl:flex-row items-center justify-between w-full px-4 sm:px-10 xl:px-40 py-20 gap-10 mt-20">
+      {/* Текстовая часть */}
+      <div className="flex flex-col justify-center text-left gap-y-6 max-w-2xl">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl text-primary font-bold leading-tight">
           Говорим с властью
         </h1>
-        <h3 className="max-sm:text-sm text-xl text-primary max-w-[700px]">
-          Создавайте официальные письма, обращения и запросы на казахском или
-          русском — за считанные минуты.
-          <br />
-          Kenes AI помогает правильно сформулировать идею, соблюсти стиль и
-          ссылаться на нужные законы.
+        <h3 className="text-sm sm:text-lg lg:text-xl text-primary">
+          Создавайте официальные письма, обращения и запросы на казахском или русском — за считанные минуты.  
+          <br className="hidden sm:block" />
+          Kenes AI помогает правильно сформулировать идею, соблюсти стиль и ссылаться на нужные законы.
         </h3>
-        <div className="flex gap-x-5">
+
+        <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={() => handleStart(fetchData, memberstack)}
-            className="bg-primary text-[#ffffff] p-4 px-8 rounded-3xl text-white font-medium text-lg transition hover:bg-[#6d7487]"
+            className="bg-primary text-white px-6 py-3 rounded-2xl font-medium text-base sm:text-lg transition hover:bg-[#6d7487]"
           >
             Начать работу
           </button>
           <button
-            className="text-primary p-4 px-8 rounded-3xl font-medium text-lg border-2 transition-all hover:border-primary"
-            style={{
-              boxShadow: "0 0 0 2px transparent",
-              borderColor: "currentColor",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.boxShadow = "0 0 0 2px currentColor")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.boxShadow = "0 0 0 2px transparent")
-            }
+            className="text-primary px-6 py-3 rounded-2xl font-medium text-base sm:text-lg border-2 border-primary transition-all hover:shadow-[0_0_0_2px_currentColor]"
           >
             Посмотреть функцию
           </button>
@@ -234,6 +227,7 @@ const HeroSection = () => {
     </header>
   );
 };
+
 
 const features = [
   {
@@ -267,12 +261,13 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section className="bg-[#f8f4f0] w-full mt-[300px] flex flex-col items-center pb-[100px]">
-    <div className="flex flex-col items-center justify-center max-w-8xl mx-auto py-20 px-6 xl:px-40 gap-y-4">
-      <h1 className="text-4xl max-w-4xl text-center font-semibold text-primary">
+  <section className="bg-[#f8f4f0] w-full mt-[300px] flex flex-col items-center pb-[100px] gap-4">
+    {/* Заголовок и описание */}
+    <div className="flex flex-col items-center justify-center w-full max-w-6xl px-4 sm:px-8 xl:px-40 gap-y-6 text-center">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-primary">
         Функции, созданные для официального общения в Казахстане
       </h1>
-      <p className="text-primary opacity-50 text-2xl text-center max-w-4xl">
+      <p className="text-sm sm:text-lg md:text-xl text-primary opacity-60">
         Откройте для себя инструменты, которые помогут вам легко создавать,
         проверять и усиливать документы для общения с государственными органами.
         Каждая функция адаптирована под правовые и административные стандарты
@@ -280,7 +275,7 @@ const FeaturesSection = () => (
       </p>
     </div>
 
-    <div className="grid grid-cols-6 grid-rows-4 gap-3 max-w-7xl">
+    <div className="grid grid-cols-6 grid-rows-4 gap-3 max-w-7xl max-lg:flex max-lg:flex-col px-6 xl:px-40">
       {features.map((feature, i) => (
         <Card key={i} {...feature} />
       ))}
@@ -291,42 +286,51 @@ const FeaturesSection = () => (
 const SubscriptionSection = () => {
   const { fetchData } = useApi();
   const memberstack = useMemberstack();
+  const plans = [
+    {
+      title: "Базовый",
+      price: "₸4,500/мес",
+      description:
+        "Подходит для индивидуальных пользователей и небольших команд",
+      buttonText: "Начать сейчас",
+      subText: "Без долгосрочных обязательств",
+    },
+    {
+      title: "Продвинутый",
+      price: "₸9,000/мес",
+      description: "Идеально для бизнеса и НПО",
+      buttonText: "Выбрать тариф",
+      subText: "Месячная оплата.\nПолная поддержка.",
+    },
+  ];
+
   return (
-    <section className="mt-10 flex flex-col items-center w-full gap-y-20">
-      <h1 className="text-7xl font-semibold text-primary text-center">
+    <section className="mt-10 w-full px-4 lg:px-20">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold text-primary text-center mb-16">
         Простой и честный тариф для каждого
       </h1>
-      <div className="flex items-center justify-center gap-x-10 h-[800px]">
-        <div className="flex flex-col px-5 py-[100px] items-center bg-[#ffffff] border-[1px] border-[#bebebe] rounded-3xl bg-white max-w-2xl w-full gap-y-6 text-center shadow-2xl">
-          <h3 className="text-2xl opacity-50">Базовый</h3>
-          <h1 className="text-5xl">₸4,500/мес</h1>
-          <h3 className="text-2xl opacity-75">
-            Подходит для индивидуальных пользователей и небольших команд
-          </h3>
-          <button
-            onClick={() => handleStart(fetchData, memberstack)}
-            className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg"
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
+        {plans.map((plan, index) => (
+          <div
+            key={index}
+            className="flex flex-col items-center bg-white border border-[#bebebe] rounded-3xl max-w-md w-full px-6 py-16 text-center shadow-2xl"
           >
-            Начать сейчас
-          </button>
-          <h3 className="text-xl opacity-60">Без долгосрочных обязательств</h3>
-        </div>
-        <div className="flex flex-col px-5 py-[100px] items-center bg-[#ffffff] border-[1px] border-[#bebebe] rounded-3xl bg-white max-w-2xl w-full gap-y-6 text-center shadow-2xl">
-          <h3 className="text-2xl opacity-50">Продвинутый</h3>
-          <h1 className="text-5xl">₸9,000/мес</h1>
-          <h3 className="text-2xl opacity-75">Идеально для бизнеса и НПО </h3>
-          <div className="flex flex-col gap-y-3 relative bottom-[-25px]">
+            <h3 className="text-xl sm:text-2xl opacity-50">{plan.title}</h3>
+            <h1 className="text-4xl sm:text-5xl my-2">{plan.price}</h1>
+            <h3 className="text-lg sm:text-2xl opacity-75">
+              {plan.description}
+            </h3>
             <button
               onClick={() => handleStart(fetchData, memberstack)}
-              className="bg-primary px-10 py-3 text-xl font-semibold text-[#ffffff] rounded-lg"
+              className="mt-6 bg-primary px-8 py-3 text-lg sm:text-xl font-semibold text-white rounded-lg"
             >
-              Выбрать тариф
+              {plan.buttonText}
             </button>
-            <h3 className="text-xl opacity-60 mt-4">
-              Месячная оплата. <br /> Полная поддержка.{" "}
+            <h3 className="text-base sm:text-xl opacity-60 mt-6 whitespace-pre-line">
+              {plan.subText}
             </h3>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -334,32 +338,34 @@ const SubscriptionSection = () => {
 
 const FeedbackSection = () => {
   return (
-    <section className="flex justify-center bg-[#f8f4f0] p-10">
-      <div className="flex flex-col w-[70%]">
-        <h1 className="text-left text-4xl mb-20 text-primary font-semibold">
+    <section className="flex justify-center bg-[#f8f4f0] px-4 py-10 md:px-10">
+      <div className="flex flex-col w-full max-w-7xl">
+        <h1 className="text-left text-3xl sm:text-4xl mb-10 sm:mb-20 text-primary font-semibold">
           Отзывы наших пользователей
         </h1>
-        <div className="gap-20 lg:grid grid-cols-5 grid-rows-4 max-lg:flex flex-col">
+
+        {/* GRID на больших экранах, COLUMN на малых */}
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:grid-rows-4">
           <Feedback
-            className="col-start-1 col-end-3 row-start-1 row-end-3"
+            className="lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:row-end-3"
             header="Мне нужно было составить официальное письмо для получения госгранта."
             description="Платформа помогла мне на каждом этапе — убедился, что заявление оформлено правильно и соответствует требованиям. Ответ пришёл быстро, и я был уверен в результате."
             author="Джамие Төлеген, предприниматель, Алматы"
           />
           <Feedback
-            className="col-start-3 col-end-5 row-start-1 row-end-3"
+            className="lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:row-end-3"
             header="Жалоба в акимат моего района прошла значительно проще с этой платформой"
             description="Инструкции были понятными, документ приняли без правок. Это сэкономило мне кучу времени и сил."
             author="Райли Садық, житель Шымкента"
           />
           <Feedback
-            className="col-start-2 col-end-4 row-start-3 row-end-5"
+            className="lg:col-start-2 lg:col-end-4 lg:row-start-3 lg:row-end-5"
             header="Как НПО, нам часто приходится общаться с министерствами."
             description="Эта платформа помогает структурировать обращения и заявки по всем официальным стандартам — работать стало быстрее и проще."
             author="Касей Аманжол, руководитель НПО, Астана"
           />
           <Feedback
-            className="col-start-4 col-end-6 row-start-3 row-end-5"
+            className="lg:col-start-4 lg:col-end-6 lg:row-start-3 lg:row-end-5"
             header="Госдокументы раньше вызывали стресс"
             description="Теперь я могу быстро подготовить всё — на казахском или русском, зная, что стиль и формат соответствуют требованиям."
             author="Жордан Бекетов, фрилансер, Караганда"
@@ -370,95 +376,93 @@ const FeedbackSection = () => {
   );
 };
 
+const faqData = [
+  {
+    question: "Для кого предназначена эта платформа?",
+    answer:
+      "Для всех в Казахстане — граждан, предпринимателей, НПО и организаций. Сервис помогает создавать официальные письма и обращения в госорганы. Юридическое образование не требуется.",
+  },
+  {
+    question: "Какие документы я могу создать?",
+    answer:
+      "Формальные письма, жалобы, заявления на субсидии, запросы, предложения и другие официальные документы. Все тексты соответствуют тону и структуре, принятым в казахстанских госорганах.",
+  },
+  {
+    question: "Есть ли поддержка казахского и русского языка?",
+    answer:
+      "Да, платформа работает на двух языках. Документы автоматически адаптируются под официальный стиль и терминологию.",
+  },
+  {
+    question: "Нужны ли мне юридические знания?",
+    answer:
+      "Нет. Платформа ведёт вас шаг за шагом, давая подсказки, формулировки и примеры. Вы просто отвечаете на вопросы и получаете готовый текст.",
+  },
+];
+
+
 const FaqSection = () => {
   return (
-    <section className="flex flex-col gap-10 p-40 w-full">
-      <div className="flex flex-col gap-10">
-        <h3 className="text-lg text-primary opacity-50">
+    <section className="flex flex-col gap-12 px-4 sm:px-10 xl:px-40 py-16 w-full">
+      {/* Заголовок */}
+      <div className="flex flex-col gap-6 text-center lg:text-left">
+        <h3 className="text-sm sm:text-base text-primary opacity-50">
           ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
         </h3>
-        <div className="flex flex-col gap-3">
-          <h1 className="text-4xl max-w-[900px] font-semibold">
-            Ваши вопросы о нашем юридическом помощнике — с ответами
-          </h1>
-          <p className="text-xl max-w-[900px] opacity-70">
-            Получите чёткие и понятные ответы о том, как использовать наш
-            AI‑сервис для создания официальных документов и общения с
-            госорганами Казахстана.
-          </p>
-        </div>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold max-w-4xl">
+          Ваши вопросы о нашем юридическом помощнике — с ответами
+        </h1>
+        <p className="text-base sm:text-lg max-w-3xl text-gray-600">
+          Получите чёткие и понятные ответы о том, как использовать наш AI‑сервис для создания официальных документов и общения с госорганами Казахстана.
+        </p>
       </div>
-      <div className="flex flex-col gap-10">
-        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
-          <p className="text-2xl">Для кого предназначена эта платформа?</p>
-          <p className="max-w-[600px] text-2xl">
-            Для всех в Казахстане — граждан, предпринимателей, НПО и
-            организаций.Сервис помогает создавать официальные письма и обращения
-            в госорганы. <strong>Юридическое образование не требуется. </strong>
-          </p>
-        </div>
-        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
-          <p className="text-2xl">Какие документы я могу создать?</p>
-          <p className="max-w-[600px] text-2xl">
-            Формальные письма, жалобы, заявления на субсидии, запросы,
-            предложения и другие официальные документы. Все тексты соответствуют
-            тону и структуре, принятым в казахстанских госорганах.
-          </p>
-        </div>
-        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
-          <p className="text-2xl">
-            Есть ли поддержка казахского и русского языка?
-          </p>
-          <p className="max-w-[600px] text-2xl">
-            Да, платформа работает на двух языках. Документы автоматически
-            адаптируются под официальный стиль и терминологию.
-          </p>
-        </div>
-        <div className="flex justify-between border-b-[1px] py-10 max-lg:flex-col gap-y-10">
-          <p className="text-2xl">Нужны ли мне юридические знания?</p>
-          <p className="max-w-[600px] text-2xl">
-            Нет. Платформа ведёт вас шаг за шагом, давая подсказки, формулировки
-            и примеры.Вы просто отвечаете на вопросы и получаете готовый текст.
-          </p>
-        </div>
+
+      {/* Вопросы */}
+      <div className="flex flex-col divide-y divide-gray-300">
+        {faqData.map(({ question, answer }, i) => (
+          <div
+            key={i}
+            className="flex flex-col lg:flex-row justify-between py-8 gap-y-6"
+          >
+            <p className="text-lg sm:text-xl font-medium lg:max-w-[30%]">
+              {question}
+            </p>
+            <p className="text-base sm:text-lg text-gray-700 lg:max-w-[60%]">
+              {answer}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
 };
 
+
 const ComplementarySection = () => {
   const { fetchData } = useApi();
   const memberstack = useMemberstack();
+
   return (
-    <section className="flex justify-between w-full bg-[#f8f4f0] py-20 px-40">
-      <div className="flex flex-col gap-3">
-        <h1 className="text-4xl font-semibold max-w-[650px] text-primary">
+    <section className="w-full bg-[#f8f4f0] py-16 px-4 sm:px-10 xl:px-40 flex flex-col lg:flex-row items-center justify-between gap-10">
+      {/* Левая часть — текст */}
+      <div className="flex flex-col gap-4 text-center lg:text-left max-w-2xl">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-primary leading-snug">
           Создавайте официальные документы за минуты
         </h1>
-        <p className="text-2xl max-w-[650px] opacity-70">
-          Генерируйте письма, обращения и запросы на казахском или русском
-          —готовые к отправке в государственные органы и организации.
+        <p className="text-base sm:text-xl opacity-70">
+          Генерируйте письма, обращения и запросы на казахском или русском — готовые к отправке в государственные органы и организации.
         </p>
       </div>
-      <div className="flex flex-col justify-center gap-5">
+
+      {/* Правая часть — кнопки */}
+      <div className="flex flex-col items-center gap-4 w-full max-w-sm">
         <button
           onClick={() => handleStart(fetchData, memberstack)}
-          className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white font-semibold transition hover:bg-[#6d7487] w-full xl:w-auto"
+          className="bg-primary text-white rounded-xl py-3 px-6 font-semibold text-base sm:text-lg transition hover:bg-[#6d7487] w-full"
         >
           Начать
         </button>
         <button
-          className="text-primary p-4 px-8 rounded-3xl font-medium text-lg border-2 transition-all hover:border-primary"
-          style={{
-            boxShadow: "0 0 0 2px transparent",
-            borderColor: "currentColor",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 0 2px currentColor")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.boxShadow = "0 0 0 2px transparent")
-          }
+          className="text-primary border-2 border-primary rounded-xl py-3 px-6 font-medium text-base sm:text-lg transition-all hover:shadow-[0_0_0_2px_currentColor] w-full"
         >
           Посмотреть возможности
         </button>
@@ -466,6 +470,7 @@ const ComplementarySection = () => {
     </section>
   );
 };
+
 
 // const Footer = () => {
 //   return (

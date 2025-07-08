@@ -8,6 +8,7 @@ export default {
     colors: {
       navbar: "#cfdcff",
       primary: "#1e3a2b",
+      white: "#ffffff",
     },
     extend: {},
   },

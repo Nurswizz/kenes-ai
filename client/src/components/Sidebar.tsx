@@ -8,6 +8,7 @@ import {
   Bot,
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { StarIcon } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: <Home />, path: "/dashboard" },
@@ -48,13 +49,20 @@ const Sidebar = () => {
             ))}
           </div>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col mb-12 gap-4">
           <button
             onClick={() => handleRedirect("/account")}
-            className="flex gap-x-3 mx-4 p-1 transition-colors hover:bg-[#cdcdcd] rounded-md mb-12"
+            className="flex gap-x-3 p-1 transition-colors hover:bg-[#cdcdcd] rounded-md"
           >
             <UserCircle />
             <p className="font-semibold">Account</p>
+          </button>
+          <button
+            onClick={() => handleRedirect("/plans")}
+            className="flex gap-x-3 p-1 transition-colors hover:bg-[#cdcdcd] rounded-md"
+          >
+            <StarIcon />
+            <p className="font-semibold">Plans</p>
           </button>
         </div>
       </div>

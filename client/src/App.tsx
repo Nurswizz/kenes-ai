@@ -17,6 +17,8 @@ function App() {
         <Route path="/tools/style-checker" element={<StyleChecker />} />
         <Route path="/tools/advisor" element={<Advisor />} />
         <Route path="/tools/simulator" element={<Simulator />} />
+        <Route path="/tools/simulator/:id" element={<Simulator />} />
+        <Route path="/plans" element={<h1>Plans</h1>} />
       </Routes>
     </BrowserRouter>
   )
