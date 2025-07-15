@@ -94,11 +94,11 @@ const AdvisorChat = () => {
     setInputText("");
 
     try {
-      const response = await fetchData("/tools/chat-advisor", {
+      const response = (await fetchData("/tools/chat-advisor", {
         method: "POST",
         body: JSON.stringify({ message: trimmedText, feature: "chat" }),
         headers: { "Content-Type": "application/json" },
-      });
+      })) as { reply: string };
 
       setMessages((prev) => [...prev, { from: "bot", text: response.reply }]);
     } catch (error) {
@@ -122,7 +122,7 @@ const AdvisorChat = () => {
               </div>
             ) : (
               <>
-                {messages.map((msg, idx) => (
+                {messages.length > 0 ? messages.map((msg, idx) => (
                   <div
                     key={idx}
                     className={`p-3 rounded-md w-fit max-w-[80%] ${
@@ -141,7 +141,11 @@ const AdvisorChat = () => {
                       </ReactMarkdown>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="p-3 rounded-md w-fit max-w-[80%] bg-[#cdcdcd] self-start italic opacity-70">
+                    No messages yet. Start the conversation!
+                  </div>
+                )}
                 {loading && (
                   <div className="p-3 rounded-md w-fit max-w-[80%] bg-[#cdcdcd] self-start italic opacity-70">
                     Bot is typing...

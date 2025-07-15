@@ -1,5 +1,9 @@
 import { useMemberstack } from "../context/MemberstackProvider";
 
+interface headers {
+  [key: string]: string;
+}
+
 const useApi = () => {
   const apiUrl = import.meta.env.VITE_API_URL!;
   const memberstack = useMemberstack();
@@ -13,13 +17,12 @@ const useApi = () => {
 
       if (memberstack && typeof memberstack.getMemberCookie === "function") {
         token = await memberstack.getMemberCookie();
-        console.log("Memberstack token:", token);
       }
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
         ...(options.headers || {}),
-      };
+      } as headers;
 
       if (token) {
         headers.Authorization = `Bearer ${token}`;

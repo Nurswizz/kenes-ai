@@ -67,7 +67,9 @@ const StyleChecker = () => {
         <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
           <h1 className="text-3xl sm:text-4xl font-bold">Style Checker</h1>
           <p className="text-lg">
-            Use our Style Checker to analyze your text for grammar, style, and
+            Check your proffessional style of writing. This tool will
+            analyze your text and provide feedback on its formality, politeness,
+            conciseness, grammar, spelling, punctuation, structure, and overall
             clarity.
           </p>
           <form className="w-full max-w-2xl" onSubmit={handleSubmit}>

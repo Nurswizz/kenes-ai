@@ -6,19 +6,23 @@ import StyleChecker from "./pages/StyleChecker";
 import LetterBuilder from "./pages/LetterBuilder";
 import Advisor from "./pages/AdvisorChat";
 import Simulator from "./pages/Simulator";
+import SimulatorChat from "./pages/SimulatorChat";
+import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/tools/letter-builder" element={<LetterBuilder />} />
-        <Route path="/tools/style-checker" element={<StyleChecker />} />
-        <Route path="/tools/advisor" element={<Advisor />} />
-        <Route path="/tools/simulator" element={<Simulator />} />
-        <Route path="/tools/simulator/:id" element={<Simulator />} />
-        <Route path="/plans" element={<h1>Plans</h1>} />
+
+          <Route path="/dashboard" element={ <ProtectedRoute ><Dashboard /></ProtectedRoute>} />
+          <Route path="/account" element={<ProtectedRoute ><Account /></ProtectedRoute>} />
+          <Route path="/tools/letter-builder" element={<ProtectedRoute ><LetterBuilder /></ProtectedRoute>} />
+          <Route path="/tools/style-checker" element={<ProtectedRoute ><StyleChecker /></ProtectedRoute>} />
+          <Route path="/tools/advisor" element={<ProtectedRoute ><Advisor /></ProtectedRoute>} />
+          <Route path="/tools/simulator" element={<ProtectedRoute ><Simulator /></ProtectedRoute>} />
+          <Route path="/tools/simulator/:id" element={<SimulatorChat />} />
+          <Route path="/plans" element={<h1>Plans</h1>} />
+
       </Routes>
     </BrowserRouter>
   )

@@ -68,7 +68,7 @@ const Sidebar = () => {
       </div>
 
       {/* Mobile Navbar */}
-      <div className="lg:hidden bg-[white] fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 z-50 flex justify-around py-2">
+      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 z-50 flex justify-around py-2">
         {[
           ...navItems,
           { label: "Account", icon: <UserCircle />, path: "/account" },

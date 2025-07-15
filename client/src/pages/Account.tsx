@@ -4,22 +4,37 @@ import { useMemberstack } from "../context/MemberstackProvider";
 import { preconnect } from "react-dom";
 import { LoaderCircle } from "lucide-react";
 import useApi from "../hooks/useApi";
+import { useMemberstackReady } from "../context/MemberstackProvider";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
   const memberstack = useMemberstack();
   const [loading, setLoading] = useState<boolean>(false);
   const {fetchData} = useApi();
-
+  const memberstackReady = useMemberstackReady();
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!localUser || Object.keys(localUser).length === 0) {
-      window.location.href = "/";
-    } else {
-      setUser(localUser);
+    
+    const fetchUser = async () => {
+      if (!localUser || Object.keys(localUser).length === 0) {
+        window.location.href = "/";
+        return;
+      }
+      if (!memberstackReady) {
+        return;
+      }
+      try {
+        const response = await fetchData(`/users/me`);
+        setUser(response);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("An error occurred while fetching user data. Please try again later.");
+      }
     }
+    fetchUser();
+  }, [memberstackReady])
 
-  }, []);
+  
   useEffect(() => {
     preconnect(import.meta.env.VITE_API_URL);
   }, []);
