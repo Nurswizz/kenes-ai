@@ -23,7 +23,6 @@ const handleStart = async <T = unknown>(
 
     if (member?.data) {
       console.log("User already logged in, redirecting:", member);
-      window.location.href = "/dashboard";
       return;
     }
 
