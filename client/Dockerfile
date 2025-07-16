@@ -1,3 +1,4 @@
+# Build stage
 FROM node:21-alpine AS builder
 
 WORKDIR /app
@@ -6,11 +7,17 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:21-alpine AS production
+# Production stage
+FROM node:21-alpine
+
+RUN npm install -g serve
 
 WORKDIR /app
-COPY --from=builder /app/dist ./dist
-COPY package*.json ./
-RUN npm install --only=production
 
-CMD ["node", "dist/main.js"]
+COPY --from=builder /app/dist ./dist
+
+ENV PORT=8080
+
+EXPOSE 8080
+
+CMD ["serve", "-s", "dist", "-l", "8080"]
