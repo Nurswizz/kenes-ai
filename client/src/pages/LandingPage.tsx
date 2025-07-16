@@ -27,7 +27,7 @@ const handleStart = async <T = unknown>(
       return;
     }
 
-    const result = await memberstackInstance.openModal("SIGNUP", {
+    await memberstackInstance.openModal("SIGNUP", {
       signup: {
         plans: [import.meta.env.VITE_PLAN_FREE_ID!],
       },
@@ -54,7 +54,7 @@ const handleStart = async <T = unknown>(
 
     localStorage.setItem("user", JSON.stringify(memberData));
 
-    const response = await fetchData("/auth/sync-member", {
+    await fetchData("/auth/sync-member", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
