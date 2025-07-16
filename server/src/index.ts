@@ -24,6 +24,8 @@ mongoose
 
 const app = express();
 
+console.log("CORS origin set to:", process.env.CORS_ORIGIN);
+
 app.use(cors({origin: process.env.CORS_ORIGIN, credentials: true, optionsSuccessStatus: 200, methods: "GET,HEAD,PUT,PATCH,POST,DELETE"}));
 
 const PORT = process.env.PORT || 3000;
@@ -35,6 +37,9 @@ app.use("/api", authRoutes);
 app.use("/api", aiRoutes);
 app.use("/api", userRoutes);
 app.use("/api", chatRouter);
+app.get("/", (req, res) => {
+  console.log("Original request URL:", req.headers.origin);
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
