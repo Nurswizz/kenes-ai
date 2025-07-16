@@ -14,54 +14,44 @@ type CardProps = {
   className?: string;
 };
 
-const handleStart = async <T = unknown,>(
+const handleStart = async <T = unknown>(
   fetchData: (endpoint: string, options?: RequestInit) => Promise<T>,
   memberstackInstance: any
 ) => {
-  if ((await memberstackInstance.getCurrentMember()).data) {
-    window.location.href = "/dashboard";
-    return;
-  }
-  const result = await memberstackInstance.openModal("SIGNUP", {
-    signup: {
-      plans: [import.meta.env.VITE_PLAN_FREE_ID!],
-    },
-  });
-
-  if (
-    result &&
-    typeof result === "object" &&
-    "data" in result &&
-    "type" in result
-  ) {
+  try {
     const member = await memberstackInstance.getCurrentMember();
 
-    type MemberData = {
-      id?: string;
-      email: string;
-      planConnections?: { type?: string }[];
-      customFields?: {
-        firstName?: string;
-        lastName?: string;
-        [key: string]: unknown;
-      };
-      auth?: {
-        email?: string;
-        [key: string]: unknown;
-      };
-      [key: string]: unknown;
-    };
+    if (member?.data) {
+      console.log("User already logged in, redirecting:", member);
+      window.location.href = "/dashboard";
+      return;
+    }
 
-    const memberDataObj = member?.data as MemberData | undefined;
+    const result = await memberstackInstance.openModal("SIGNUP", {
+      signup: {
+        plans: [import.meta.env.VITE_PLAN_FREE_ID!],
+      },
+    });
+
+    if (!result || typeof result !== "object" || "data" !in result) return;
+
+    const memberRefetched = await memberstackInstance.getCurrentMember();
+    const memberDataObj = memberRefetched?.data;
+
+    if (!memberDataObj) {
+      console.error("Failed to fetch member data after signup");
+      return;
+    }
 
     const memberData = {
-      id: memberDataObj?.id,
+      id: memberDataObj.id,
       email: memberDataObj?.auth?.email,
       firstName: memberDataObj?.customFields?.["first-name"],
       lastName: memberDataObj?.customFields?.["last-name"],
       memberstackId: memberDataObj?.id,
-      plan: memberDataObj?.planConnections?.[0]?.type,
+      plan: memberDataObj?.planConnections?.[0]?.type ?? "FREE",
     };
+
     localStorage.setItem("user", JSON.stringify(memberData));
 
     await fetchData("/auth/sync-member", {
@@ -75,10 +65,13 @@ const handleStart = async <T = unknown,>(
     if (memberData.id) {
       window.location.href = "/dashboard";
     } else {
-      console.error("Member data is not available");
+      console.error("Member ID missing — cannot redirect.");
     }
+  } catch (err) {
+    console.error("Signup error:", err);
   }
 };
+
 
 const Card = ({ icon, header, description, className }: CardProps) => (
   <div

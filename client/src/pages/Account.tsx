@@ -12,6 +12,7 @@ const Account = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const {fetchData} = useApi();
   const memberstackReady = useMemberstackReady();
+  
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
     
@@ -23,6 +24,7 @@ const Account = () => {
       if (!memberstackReady) {
         return;
       }
+
       try {
         const response = await fetchData(`/users/me`);
         setUser(response);
@@ -37,6 +39,7 @@ const Account = () => {
   
   useEffect(() => {
     preconnect(import.meta.env.VITE_API_URL);
+    
   }, []);
   const handleLogOut = async () => {
     setLoading(true);
@@ -45,7 +48,7 @@ const Account = () => {
     setLoading(false);
     window.location.href = "/";
   };
-
+  
   const handleUpgrade = async () => {
     const planId = import.meta.env.VITE_PLAN_PRO_ID;
     if (!planId) {
