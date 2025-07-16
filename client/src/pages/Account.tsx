@@ -14,13 +14,8 @@ const Account = () => {
   const memberstackReady = useMemberstackReady();
   
   useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
     
     const fetchUser = async () => {
-      if (!localUser || Object.keys(localUser).length === 0) {
-        window.location.href = "/";
-        return;
-      }
       if (!memberstackReady) {
         return;
       }

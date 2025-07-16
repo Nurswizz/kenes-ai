@@ -23,6 +23,7 @@ const handleStart = async <T = unknown>(
 
     if (member?.data) {
       console.log("User already logged in, redirecting:", member);
+      window.location.href = "/dashboard";
       return;
     }
 
@@ -32,7 +33,7 @@ const handleStart = async <T = unknown>(
       },
     });
 
-    if (!result || typeof result !== "object" || "data" !in result) return;
+
 
     const memberRefetched = await memberstackInstance.getCurrentMember();
     const memberDataObj = memberRefetched?.data;
@@ -53,13 +54,15 @@ const handleStart = async <T = unknown>(
 
     localStorage.setItem("user", JSON.stringify(memberData));
 
-    await fetchData("/auth/sync-member", {
+    const response = await fetchData("/auth/sync-member", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(memberData),
     });
+
+
 
     if (memberData.id) {
       window.location.href = "/dashboard";

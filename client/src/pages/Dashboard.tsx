@@ -70,13 +70,6 @@ const Dashboard = () => {
   const isMemberstackReady = useMemberstackReady();
   const { fetchData } = useApi();
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  useEffect(() => {
-    if (!user || Object.keys(user).length === 0) {
-      window.location.href = "/";
-    }
-  }, []);
 
   useEffect(() => {
     const fetchUsage = async () => {
