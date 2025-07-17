@@ -31,6 +31,8 @@ const handleStart = async <T = unknown,>(
         memberstackId: memberObj?.id,
         plan: memberObj?.planConnections?.[0]?.type ?? "FREE",
       };
+
+      localStorage.setItem("user", JSON.stringify(memberData));
       await fetchData("/auth/sync-member", {
         method: "POST",
         headers: {
