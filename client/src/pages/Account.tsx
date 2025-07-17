@@ -74,7 +74,11 @@ const Account = () => {
         <div className="mt-4">
           <h1 className="text-2xl font-semibold">Full name</h1>
           <h3>
-            {user.firstName} {user.lastName}
+            {
+              user.firstName + user.lastName
+                ? `${user.firstName} ${user.lastName}`
+                : "None"
+            }
           </h3>
         </div>
         <div className="mt-4">

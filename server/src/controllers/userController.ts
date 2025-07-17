@@ -26,7 +26,7 @@ export const userController = {
     res: Response
   ): Promise<any> => {
     const userId = req.user?.id;
-
+    
     if (!userId) {
       return res
         .status(401)

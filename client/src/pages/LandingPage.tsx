@@ -14,7 +14,7 @@ type CardProps = {
   className?: string;
 };
 
-const handleStart = async <T = unknown>(
+const handleStart = async <T = unknown,>(
   fetchData: (endpoint: string, options?: RequestInit) => Promise<T>,
   memberstackInstance: any
 ) => {
@@ -22,8 +22,25 @@ const handleStart = async <T = unknown>(
     const member = await memberstackInstance.getCurrentMember();
 
     if (member?.data) {
-      console.log("User already logged in, redirecting:", member);
+      const memberObj = member?.data;
+      const memberData = {
+        id: memberObj.id,
+        email: memberObj?.auth?.email,
+        firstName: memberObj?.customFields?.["first-name"],
+        lastName: memberObj?.customFields?.["last-name"],
+        memberstackId: memberObj?.id,
+        plan: memberObj?.planConnections?.[0]?.type ?? "FREE",
+      };
+      await fetchData("/auth/sync-member", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(memberData),
+      });
+
       window.location.href = "/dashboard";
+
       return;
     }
 
@@ -32,8 +49,6 @@ const handleStart = async <T = unknown>(
         plans: [import.meta.env.VITE_PLAN_FREE_ID!],
       },
     });
-
-
 
     const memberRefetched = await memberstackInstance.getCurrentMember();
     const memberDataObj = memberRefetched?.data;
@@ -53,7 +68,7 @@ const handleStart = async <T = unknown>(
     };
 
     localStorage.setItem("user", JSON.stringify(memberData));
-    
+
     await fetchData("/auth/sync-member", {
       method: "POST",
       headers: {
@@ -61,8 +76,6 @@ const handleStart = async <T = unknown>(
       },
       body: JSON.stringify(memberData),
     });
-
-
 
     if (memberData.id) {
       window.location.href = "/dashboard";
@@ -73,7 +86,6 @@ const handleStart = async <T = unknown>(
     console.error("Signup error:", err);
   }
 };
-
 
 const Card = ({ icon, header, description, className }: CardProps) => (
   <div
@@ -196,9 +208,11 @@ const HeroSection = () => {
           Говорим с властью
         </h1>
         <h3 className="text-sm sm:text-lg lg:text-xl text-primary">
-          Создавайте официальные письма, обращения и запросы на казахском или русском — за считанные минуты.  
+          Создавайте официальные письма, обращения и запросы на казахском или
+          русском — за считанные минуты.
           <br className="hidden sm:block" />
-          Kenes AI помогает правильно сформулировать идею, соблюсти стиль и ссылаться на нужные законы.
+          Kenes AI помогает правильно сформулировать идею, соблюсти стиль и
+          ссылаться на нужные законы.
         </h3>
 
         <div className="flex flex-wrap gap-4 mt-4">
@@ -208,9 +222,7 @@ const HeroSection = () => {
           >
             Начать работу
           </button>
-          <button
-            className="text-primary px-6 py-3 rounded-2xl font-medium text-base sm:text-lg border-2 border-primary transition-all hover:shadow-[0_0_0_2px_currentColor]"
-          >
+          <button className="text-primary px-6 py-3 rounded-2xl font-medium text-base sm:text-lg border-2 border-primary transition-all hover:shadow-[0_0_0_2px_currentColor]">
             Посмотреть функцию
           </button>
         </div>
@@ -222,7 +234,6 @@ const HeroSection = () => {
     </header>
   );
 };
-
 
 const features = [
   {
@@ -394,7 +405,6 @@ const faqData = [
   },
 ];
 
-
 const FaqSection = () => {
   return (
     <section className="flex flex-col gap-12 px-4 sm:px-10 xl:px-40 py-16 w-full">
@@ -407,7 +417,9 @@ const FaqSection = () => {
           Ваши вопросы о нашем юридическом помощнике — с ответами
         </h1>
         <p className="text-base sm:text-lg max-w-3xl text-gray-600">
-          Получите чёткие и понятные ответы о том, как использовать наш AI‑сервис для создания официальных документов и общения с госорганами Казахстана.
+          Получите чёткие и понятные ответы о том, как использовать наш
+          AI‑сервис для создания официальных документов и общения с госорганами
+          Казахстана.
         </p>
       </div>
 
@@ -431,7 +443,6 @@ const FaqSection = () => {
   );
 };
 
-
 const ComplementarySection = () => {
   const { fetchData } = useApi();
   const memberstack = useMemberstack();
@@ -444,7 +455,8 @@ const ComplementarySection = () => {
           Создавайте официальные документы за минуты
         </h1>
         <p className="text-base sm:text-xl opacity-70">
-          Генерируйте письма, обращения и запросы на казахском или русском — готовые к отправке в государственные органы и организации.
+          Генерируйте письма, обращения и запросы на казахском или русском —
+          готовые к отправке в государственные органы и организации.
         </p>
       </div>
 
@@ -456,16 +468,13 @@ const ComplementarySection = () => {
         >
           Начать
         </button>
-        <button
-          className="text-primary border-2 border-primary rounded-xl py-3 px-6 font-medium text-base sm:text-lg transition-all hover:shadow-[0_0_0_2px_currentColor] w-full"
-        >
+        <button className="text-primary border-2 border-primary rounded-xl py-3 px-6 font-medium text-base sm:text-lg transition-all hover:shadow-[0_0_0_2px_currentColor] w-full">
           Посмотреть возможности
         </button>
       </div>
     </section>
   );
 };
-
 
 // const Footer = () => {
 //   return (

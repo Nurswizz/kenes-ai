@@ -1,5 +1,6 @@
 import { User } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
+import { authService } from "./authService";
 
 import { feature } from "../models/UsageRecord";
 
@@ -7,6 +8,11 @@ const userService = {
   async getUsage(userId: string) {
     if (!userId) {
       throw new Error("Unauthorized: User not logged in");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      authService
     }
 
     const usageRecords = await UsageRecord.find({ userId }).sort({
