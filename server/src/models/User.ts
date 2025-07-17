@@ -6,8 +6,8 @@ const PLAN = {
   ENTERPRISE: "Enterprise",
 };
 interface IUser extends Document {
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   createdAt: Date;
   memberstackId?: string;
@@ -18,8 +18,8 @@ interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: { type: String },
+  lastName: { type: String },
   email: { type: String, required: true, unique: true },
   createdAt: { type: Date, default: Date.now },
   memberstackId: { type: String, unique: true },
