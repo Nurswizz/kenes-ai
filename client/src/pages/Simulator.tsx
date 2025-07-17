@@ -65,14 +65,12 @@ const Simulator = () => {
       return;
     }
 
-    const newChat = {
-      title: subject === "Другое" ? customSubject : subject,
-    };
+    const scenario = subject === "Другое" ? customSubject : subject;
 
     try {
       const response = await fetchData("/chat/simulator-chats", {
         method: "POST",
-        body: JSON.stringify(newChat),
+        body: JSON.stringify({ scenario }),
       }) as unknown as any;
       console.log("Chat created:", response);
       setChats((prevChats) => [...prevChats, response.chat]);

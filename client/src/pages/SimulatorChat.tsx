@@ -51,10 +51,9 @@ const SimulatorChat = () => {
       const response = (await fetchData(`/tools/simulator-chat/${id}`, {
         method: "POST",
         body: JSON.stringify({ message: text, feature: "chat" }),
-      })) as { result: IChatMessage };
-
+      })) as IChatMessage;
       if (response) {
-        setMessages((prev) => [...prev, response.result]);
+        setMessages((prev) => [...prev, response]);
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -85,7 +84,7 @@ const SimulatorChat = () => {
       try {
         setInitialLoading(true);
         const response = (await fetchData(
-          `/chat/simulator-messages/${id}`
+          `/chat/simulator-chats/${id}/messages`
         )) as { messages: IChatMessage[] };
         setMessages(response.messages || []);
       } catch (error) {
