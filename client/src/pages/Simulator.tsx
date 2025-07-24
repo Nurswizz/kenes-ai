@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useApi from "../hooks/useApi";
 import { useMemberstackReady } from "../context/MemberstackProvider";
+import { useTranslation } from "react-i18next";
 
 const ChatContainer = ({ title, id }: { title: string; id: string }) => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Simulator = () => {
   const [subject, setSubject] = useState("");
   const [customSubject, setCustomSubject] = useState("");
   const [error, setError] = useState("");
+  const {t} = useTranslation();
 
   const { fetchData } = useApi();
   const isMemberstackReady = useMemberstackReady();
@@ -88,7 +90,7 @@ const Simulator = () => {
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
-        <h1 className="text-3xl sm:text-4xl font-bold">Simulator Chats</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">{t("simulator-chats")}</h1>
         <div className="flex-1 flex flex-col gap-2">
           {chats.length > 0 ? (
             chats.map((chat) => (
@@ -96,7 +98,7 @@ const Simulator = () => {
             ))
           ) : (
             <p className="text-gray-500">
-              No chats available. Create a new one!
+              {t("no-chats-found")}
             </p>
           )}
         </div>
@@ -105,13 +107,13 @@ const Simulator = () => {
           className="flex items-center gap-2 hover:bg-[#cdcdcd] p-2 rounded-lg transition-colors max-lg:mb-[50px]"
         >
           <PlusCircle className="w-6 h-6 text-primary cursor-pointer" />
-          <span className="text-lg font-semibold">Create New Simulation</span>
+          <span className="text-lg font-semibold">{t("create-simulation")}</span>
         </button>
 
         {isModalOpen && (
           <div className="fixed inset-0 bg-[#000000] bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">New Simulation</h2>
+              <h2 className="text-xl font-bold mb-4">{t("new-simulation")}</h2>
               <select
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
@@ -149,13 +151,13 @@ const Simulator = () => {
                   onClick={handleModalClose}
                   className="px-4 py-2 bg-gray-200 rounded"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleCreate}
                   className="px-4 py-2 bg-primary text-white rounded"
                 >
-                  Create
+                  {t("create")}
                 </button>
               </div>
             </div>

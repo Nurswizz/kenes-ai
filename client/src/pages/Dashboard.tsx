@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import useApi from "../hooks/useApi";
 import { useMemberstackReady } from "../context/MemberstackProvider";
 import { LoaderCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type FeatureKey = "letter" | "style" | "chat";
 
@@ -44,14 +45,22 @@ const Feature = ({ title, num }: IFeature) => {
 };
 
 const Activity = ({ title, date, meta }: IActivity) => {
-  
+  const { t } = useTranslation();
+  const formattedTitle = t(`feature.${title}`);
+  let message = ""
+  if (localStorage.getItem("language") === "ru") {
+    message = `Использована функция ${formattedTitle}`;
+  } else if (localStorage.getItem("language") === "en") {
+    message = `Used feature ${formattedTitle}`;
+  }
+  const formattedDate = date.toUTCString();
   return (
     <div
       onClick={() => meta?.pdf_url && window.open(meta.pdf_url, "_blank")}
       className="w-full flex flex-col hover:bg-[#cdcdcd] cursor-pointer p-3 rounded-lg transition-colors"
     >
-      <h1>{title}</h1>
-      <h3>{date.toUTCString()}</h3>
+      <h1>{message}</h1>
+      <h3>{formattedDate}</h3>
     </div>
   );
 };
@@ -69,7 +78,8 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isMemberstackReady = useMemberstackReady();
   const { fetchData } = useApi();
-
+  const { t } = useTranslation();
+  
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -92,16 +102,16 @@ const Dashboard = () => {
           } as Record<FeatureKey, IUsageRecord[]>
         );
         // show the latest 5 records overall
-
-        const recent = usageData.usageRecords
-          .reverse()
-          .slice(0, 5)
-          .map((rec) => ({
-            title: `Used ${rec.featureKey} feature`,
-            date: new Date(rec.usedAt),
-            id: `${rec.userId}-${rec.featureKey}-${rec.usedAt}`,
-            meta: rec.meta || {},
-          }));
+        
+        const recent = usageData.usageRecords.reverse()
+          .map((rec) => {
+            return {
+              title: rec.featureKey,
+              date: new Date(rec.usedAt),
+              id: `${rec.userId}-${rec.featureKey}-${rec.usedAt}`,
+              meta: rec.meta || {},
+            }
+      });
 
         setCategorizedUsage(grouped);
         setRecentActivity(recent);
@@ -125,24 +135,22 @@ const Dashboard = () => {
   const styleCount = categorizedUsage.style.length;
   const chatCount = categorizedUsage.chat.length;
 
-
-
   return (
     <div className="flex flex-col lg:flex-row h-full lg:h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
-        <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">{t("dashboard")}</h1>
 
         {/* Features */}
         <div className="flex flex-wrap -mx-2">
-          <Feature title="Letters Drafted" num={letterCount} />
-          <Feature title="Style Checks" num={styleCount} />
-          <Feature title="Chat Uses" num={chatCount} />
+          <Feature title={t("letters-drafted")} num={letterCount} />
+          <Feature title={t("style-checked")} num={styleCount} />
+          <Feature title={t("chat-uses")} num={chatCount} />
         </div>
 
         {/* Recent Activity */}
         <div className="flex flex-col gap-3 mt-6">
-          <h1 className="text-3xl sm:text-4xl font-bold">Recent Activity</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold">{t("recent-activity")}</h1>
           <div className="flex flex-col gap-5 mb-12">
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (

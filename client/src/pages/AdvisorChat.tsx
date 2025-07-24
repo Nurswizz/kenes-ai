@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import { useMemberstackReady } from "../context/MemberstackProvider";
 import { LoaderCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ChatMessage {
   from: "user" | "bot";
@@ -24,6 +25,7 @@ const AdvisorChat = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isMemberstackReady = useMemberstackReady();
+  const { t } = useTranslation();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -112,7 +114,7 @@ const AdvisorChat = () => {
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
-        <h1 className="text-3xl sm:text-4xl font-bold">Advisor Chat</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">{t("advisor")}</h1>
 
         <div className="flex flex-1 flex-col border rounded-lg overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -176,7 +178,7 @@ const AdvisorChat = () => {
               onClick={() => handleSendMessage(inputText)}
               disabled={loading}
             >
-              {loading ? "..." : "Send"}
+              {loading ? "..." : t("send")}
             </button>
           </div>
         </div>

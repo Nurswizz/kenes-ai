@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import useApi from "../hooks/useApi";
 import { LoaderCircle } from "lucide-react";
 import { useMemberstackReady } from "../context/MemberstackProvider";
+import { useTranslation } from "react-i18next";
 
 interface IChatMessage {
   _id?: object;
@@ -26,6 +27,7 @@ const SimulatorChat = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isMemberstackReady = useMemberstackReady();
   const [scenario, setScenario] = useState<string>("");
+  const { t } = useTranslation();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -174,7 +176,7 @@ const SimulatorChat = () => {
               onClick={() => handleSendMessage(inputText)}
               disabled={loading}
             >
-              {loading ? "..." : "Send"}
+              {loading ? "..." : t("send")}
             </button>
           </div>
         </div>

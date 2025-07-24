@@ -12,7 +12,7 @@ const userService = {
 
     const user = await User.findById(userId);
     if (!user) {
-      authService
+      authService;
     }
 
     const usageRecords = await UsageRecord.find({ userId }).sort({
@@ -107,6 +107,25 @@ const userService = {
     }
 
     return updates.length;
+  },
+
+  async changeUserInfo(
+    userId: string,
+    newUserInfo: Partial<InstanceType<typeof User>>
+  ) {
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    Object.assign(user, newUserInfo);
+    await user.save();
+
+    return user;
   },
 };
 export { userService };

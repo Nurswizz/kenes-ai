@@ -14,4 +14,6 @@ userRouter.get(
 
 userRouter.put("/users/plan", authMiddleware, userController.updatePlan);
 userRouter.get("/users/me", authMiddleware, userController.getCurrentUser);
+userRouter.put("/users/me", authMiddleware, userController.changeUserInfo);
+
 export default userRouter;

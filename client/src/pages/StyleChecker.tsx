@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { XCircle } from "lucide-react";
 import { CheckCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface IResponse {
   isFormal: boolean;
@@ -28,6 +29,7 @@ const StyleChecker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<IResponse | null>(null);
+  const { t } = useTranslation();
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.stopPropagation();
@@ -63,21 +65,18 @@ const StyleChecker = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div>
-        <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
-          <h1 className="text-3xl sm:text-4xl font-bold">Style Checker</h1>
+      <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16 gap-6">
+        <div className="flex-1 flex flex-col gap-6">
+          <h1 className="text-3xl sm:text-4xl font-bold">{t("feature.style")}</h1>
           <p className="text-lg">
-            Check your proffessional style of writing. This tool will
-            analyze your text and provide feedback on its formality, politeness,
-            conciseness, grammar, spelling, punctuation, structure, and overall
-            clarity.
+            {t("style.header")}
           </p>
           <form className="w-full max-w-2xl" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               <textarea
                 name="text"
                 className="border-2 border-gray-300 p-2 rounded-lg h-40 resize-none"
-                placeholder="Enter your text here"
+                placeholder={t("style.placeholder")}
               ></textarea>
               <button
                 type="submit"
@@ -87,7 +86,7 @@ const StyleChecker = () => {
                 {loading ? (
                   <LoaderCircle className="animate-spin h-5 w-5 text-white" />
                 ) : (
-                  "Check Style"
+                  t("style")
                 )}
               </button>
               {error && <div className="text-[red] mt-2">Error: {error}</div>}
@@ -95,11 +94,11 @@ const StyleChecker = () => {
               {response && (
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                   <h2 className="text-xl font-semibold mb-2">
-                    Analysis Result
+                    {t("style.analysis")}
                   </h2>
                   <ul className="list-disc pl-5">
                     <li>
-                      Formal: {response.isFormal ? "Yes" : "No"}{" "}
+                      {t("formal")}: {response.isFormal ? "Yes" : "No"}{" "}
                       {response.isFormal ? (
                         <CheckCircle
                           color="green"
@@ -113,7 +112,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Polite: {response.isPolite ? "Yes" : "No"}{" "}
+                      {t("polite")}: {response.isPolite ? "Yes" : "No"}{" "}
                       {response.isPolite ? (
                         <CheckCircle
                           color="green"
@@ -127,7 +126,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Concise: {response.isConcise ? "Yes" : "No"}{" "}
+                      {t("concise")}: {response.isConcise ? "Yes" : "No"}{" "}
                       {response.isConcise ? (
                         <CheckCircle
                           color="green"
@@ -141,7 +140,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Correct Grammar:{" "}
+                      {t("grammatical")}:{" "}
                       {response.hasCorrectGrammar ? "Yes" : "No"}{" "}
                       {response.hasCorrectGrammar ? (
                         <CheckCircle
@@ -156,7 +155,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Correct Spelling:{" "}
+                      {t("spelling")}:{" "}
                       {response.hasCorrectSpelling ? "Yes" : "No"}{" "}
                       {response.hasCorrectSpelling ? (
                         <CheckCircle
@@ -171,7 +170,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Correct Punctuation:{" "}
+                      {t("punctuation")}:{" "}
                       {response.hasCorrectPunctuation ? "Yes" : "No"}{" "}
                       {response.hasCorrectPunctuation ? (
                         <CheckCircle
@@ -186,7 +185,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Clear Structure:{" "}
+                      {t("structure")}:{" "}
                       {response.hasClearStructure ? "Yes" : "No"}{" "}
                       {response.hasClearStructure ? (
                         <CheckCircle
@@ -201,7 +200,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Professional Language:{" "}
+                      {t("proffessional")}:{" "}
                       {response.isProfessionalLanguage ? "Yes" : "No"}{" "}
                       {response.isProfessionalLanguage ? (
                         <CheckCircle
@@ -216,7 +215,7 @@ const StyleChecker = () => {
                       )}
                     </li>
                     <li>
-                      Respectful Tone:{" "}
+                      {t("respectful")}:{" "}
                       {response.isRespectfulTone ? "Yes" : "No"}{" "}
                       {response.isRespectfulTone ? (
                         <CheckCircle
@@ -233,7 +232,7 @@ const StyleChecker = () => {
                   </ul>
                   {response.refinedMessage && (
                     <div className="mt-4">
-                      <h3 className="font-semibold">Refined Message:</h3>
+                      <h3 className="font-semibold">{t("refined-message")}:</h3>
                       <p>{response.refinedMessage}</p>
                     </div>
                   )}

@@ -96,6 +96,29 @@ export const userController = {
         .status(500)
         .json({ message: error.message || "Internal server error" });
     }
-  }
+  },
+  changeUserInfo: async (
+    req: Request & { user?: { id: string } },
+    res: Response
+  ): Promise<any> => {
+    const userId = req.user?.id;
+    const newUserInfo = req.body;
+
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User not logged in" });
+    }
+
+    try {
+      const updatedUser = await userService.changeUserInfo(userId, newUserInfo);
+      return res.status(200).json(updatedUser);
+    } catch (error: any) {
+      console.error("Error changing user info:", error);
+      return res
+        .status(500)
+        .json({ error: error.message || "Internal server error" });
+    }
+  },
 
 };

@@ -8,6 +8,8 @@ import Advisor from "./pages/AdvisorChat";
 import Simulator from "./pages/Simulator";
 import SimulatorChat from "./pages/SimulatorChat";
 import ProtectedRoute from "./components/ProtectedRoute";
+import "./i18n/i18n";
+
 function App() {
   return (
     <BrowserRouter>
