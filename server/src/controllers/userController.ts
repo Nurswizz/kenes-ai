@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { userService } from "../services/userService";
-import { chatService } from "../services/chatService";
 
 export const userController = {
   getUser: async (req: Request, res: Response): Promise<any> => {
@@ -120,5 +119,31 @@ export const userController = {
         .json({ error: error.message || "Internal server error" });
     }
   },
+  updateEmail: async (
+    req: Request & { user?: { id: string } },
+    res: Response
+  ): Promise<any> => {
+    const userId = req.user?.id;
+    const { email } = req.body;
 
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User not logged in" });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    try {
+      const updatedUser = await userService.updateEmail(userId, email);
+      return res.status(200).json(updatedUser);
+    } catch (error: any) {
+      console.error("Error updating email:", error);
+      return res
+        .status(500)
+        .json({ error: error.message || "Internal server error" });
+    }
+  },
 };

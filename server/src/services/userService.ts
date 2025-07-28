@@ -1,18 +1,14 @@
 import { User } from "../models/User";
 import { UsageRecord } from "../models/UsageRecord";
-import { authService } from "./authService";
-
-import { feature } from "../models/UsageRecord";
 
 const userService = {
   async getUsage(userId: string) {
     if (!userId) {
       throw new Error("Unauthorized: User not logged in");
     }
-
     const user = await User.findById(userId);
     if (!user) {
-      authService;
+      console.error("User not found for ID:", userId);
     }
 
     const usageRecords = await UsageRecord.find({ userId }).sort({
@@ -30,19 +26,6 @@ const userService = {
     }
 
     const user = await User.findById(userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return user;
-  },
-  async getUserByMemberStackId(memberstackId: string) {
-    if (!memberstackId) {
-      throw new Error("No Memberstack ID provided");
-    }
-
-    const user = await User.findOne({ memberstackId });
 
     if (!user) {
       throw new Error("User not found");
@@ -123,6 +106,21 @@ const userService = {
     }
 
     Object.assign(user, newUserInfo);
+    await user.save();
+
+    return user;
+  },
+  async updateEmail(userId: string, newEmail: string) {
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    user.email = newEmail;
     await user.save();
 
     return user;

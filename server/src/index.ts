@@ -6,6 +6,7 @@ import aiRoutes from "./routes/aiRoute";
 import userRoutes from "./routes/userRouter";
 import chatRouter from "./routes/chatRouter"
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { prettyMorgan } from "./utils/morgan";
 
 import "./jobs/montrhlyReset";
@@ -27,6 +28,7 @@ const app = express();
 console.log("CORS origin set to:", process.env.CORS_ORIGIN);
 
 app.use(cors({origin: process.env.CORS_ORIGIN, credentials: true, optionsSuccessStatus: 200, methods: "GET,HEAD,PUT,PATCH,POST,DELETE"}));
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 3000;
 
