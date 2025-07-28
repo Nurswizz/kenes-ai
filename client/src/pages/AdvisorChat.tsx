@@ -3,7 +3,6 @@ import Sidebar from "../components/Sidebar";
 import useApi from "../hooks/useApi";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -24,7 +23,7 @@ const AdvisorChat = () => {
   const { fetchData } = useApi();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const isMemberstackReady = useMemberstackReady();
+
   const { t } = useTranslation();
 
   const scrollToBottom = () => {
@@ -64,7 +63,6 @@ const AdvisorChat = () => {
   }
 
   useEffect(() => {
-    if (!isMemberstackReady) return;
 
     const fetchInitMessages = async () => {
       try {
@@ -81,7 +79,7 @@ const AdvisorChat = () => {
     };
 
     fetchInitMessages();
-  }, [isMemberstackReady]);
+  }, []);
 
   useEffect(() => {
     scrollToBottom();

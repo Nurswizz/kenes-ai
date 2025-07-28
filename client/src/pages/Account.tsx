@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { useMemberstack } from "../context/MemberstackProvider";
 import { preconnect } from "react-dom";
 import { LoaderCircle } from "lucide-react";
 import useApi from "../hooks/useApi";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { useTranslation } from "react-i18next";
+import useAuth from "../hooks/useAuth";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
-  const memberstack = useMemberstack();
   const [loading, setLoading] = useState<boolean>(false);
   const {fetchData} = useApi();
-  const memberstackReady = useMemberstackReady();
   const { t } = useTranslation();
+  const { logout } = useAuth();
   
   useEffect(() => {
     
     const fetchUser = async () => {
-      if (!memberstackReady) {
-        return;
-      }
 
       try {
         const response = await fetchData(`/users/me`);
@@ -31,7 +26,7 @@ const Account = () => {
       }
     }
     fetchUser();
-  }, [memberstackReady])
+  }, [])
 
   
   useEffect(() => {
@@ -40,10 +35,14 @@ const Account = () => {
   }, []);
   const handleLogOut = async () => {
     setLoading(true);
-    await memberstack.logout();
-    localStorage.removeItem("user");
-    setLoading(false);
-    window.location.href = "/";
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error logging out:", error);
+      alert("An error occurred while logging out. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
   
   const handleUpgrade = async () => {

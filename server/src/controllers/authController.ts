@@ -76,6 +76,7 @@ const authController = {
       const savedUser = await newUser.save();
       const transformedUser = transformUser(savedUser);
       const { accessToken, refreshToken } = generateTokens(savedUser);
+      console.log(transformUser(savedUser), accessToken);
       return res
         .status(201)
         .cookie("refreshToken", refreshToken, {

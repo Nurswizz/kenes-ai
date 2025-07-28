@@ -8,6 +8,9 @@ import Advisor from "./pages/AdvisorChat";
 import Simulator from "./pages/Simulator";
 import SimulatorChat from "./pages/SimulatorChat";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+
 import "./i18n/i18n";
 
 function App() {
@@ -15,7 +18,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/signup" element={<Signup />} />
           <Route path="/dashboard" element={ <ProtectedRoute ><Dashboard /></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute ><Account /></ProtectedRoute>} />
           <Route path="/tools/letter-builder" element={<ProtectedRoute ><LetterBuilder /></ProtectedRoute>} />

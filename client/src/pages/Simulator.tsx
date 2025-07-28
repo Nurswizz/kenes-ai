@@ -3,7 +3,6 @@ import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useApi from "../hooks/useApi";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { useTranslation } from "react-i18next";
 
 const ChatContainer = ({ title, id }: { title: string; id: string }) => {
@@ -29,14 +28,10 @@ const Simulator = () => {
   const {t} = useTranslation();
 
   const { fetchData } = useApi();
-  const isMemberstackReady = useMemberstackReady();
 
   const [chats, setChats] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!isMemberstackReady) {
-      return;
-    }
     const fetchChats = async () => {
       try {
         const response = await fetchData("/chat/simulator-chats") as unknown as any;
@@ -46,7 +41,7 @@ const Simulator = () => {
       }
     };
     fetchChats();
-  }, [isMemberstackReady]);
+  }, []);
 
   const handleModalOpen = () => {
     setIsModalOpen(true);

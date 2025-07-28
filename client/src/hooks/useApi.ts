@@ -1,23 +1,16 @@
-import { useMemberstack } from "../context/MemberstackProvider";
-
 interface headers {
   [key: string]: string;
 }
 
 const useApi = () => {
   const apiUrl = import.meta.env.VITE_API_URL!;
-  const memberstack = useMemberstack();
 
   const fetchData = async <T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> => {
     try {
-      let token: string | undefined = undefined;
-
-      if (memberstack && typeof memberstack.getMemberCookie === "function") {
-        token = await memberstack.getMemberCookie();
-      }
+      const token = localStorage.getItem('accessToken');
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -31,11 +24,13 @@ const useApi = () => {
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: "GET",
         ...options,
+        credentials: "include",
         headers,
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
       }
 
       return await response.json();
