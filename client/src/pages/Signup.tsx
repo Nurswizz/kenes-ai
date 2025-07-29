@@ -14,6 +14,7 @@ interface AuthUser {
 const Signup = () => {
   const { fetchData } = useApi();
   const { login, isAuthenticated } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -30,17 +31,17 @@ const Signup = () => {
   const handleSubmit = async () => {
     // валидация
     if (!user.firstName || !user.lastName || !user.email || !user.password) {
-      alert("Please fill in all fields");
+      setError("Please fill in all fields");
       return;
     }
 
     if (user.password.length < 6) {
-      alert("Password must be at least 6 characters long");
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(user.email)) {
-      alert("Please enter a valid email address");
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -48,7 +49,7 @@ const Signup = () => {
       !/^[a-zA-Z]+$/.test(user.firstName) ||
       !/^[a-zA-Z]+$/.test(user.lastName)
     ) {
-      alert("First and Last names must contain only letters");
+      setError("First and Last names must contain only letters");
       return;
     }
 
@@ -58,17 +59,23 @@ const Signup = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       })) as AuthUser;
-      console.log("Signup response:", response);
+
       if (response?.user) {
         login(response);
         window.location.href = '/dashboard';
         setUser({ firstName: "", lastName: "", email: "", password: "" });
       } else {
-        alert("Signup failed. Please try again.");
+        setError("Signup failed. Please try again.");
       }
     } catch (error: any) {
-      console.log("Signup error:", error.message);
-      alert(error.message || "An error occurred during signup");
+      if (error.error.status === 400) {
+        setError("User already exists.");
+      } else if (error.error.status === 500) {
+        setError("Server error. Please try again later.");
+      } else {
+        setError(error.message || "An error occurred during signup");
+      }
+      console.error("Signup error:", error);
     }
   };
 
@@ -87,35 +94,36 @@ const Signup = () => {
           <input
             type="text"
             placeholder="First Name"
-            className="border p-2 mb-4"
+            className="border p-2 mb-4 rounded-lg"
             value={user.firstName}
             onChange={(e) => setUser({ ...user, firstName: e.target.value })}
           />
           <input
             type="text"
             placeholder="Last Name"
-            className="border p-2 mb-4"
+            className="border p-2 mb-4 rounded-lg"
             value={user.lastName}
             onChange={(e) => setUser({ ...user, lastName: e.target.value })}
           />
           <input
             type="email"
             placeholder="Email"
-            className="border p-2 mb-4"
+            className="border p-2 mb-4 rounded-lg"
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
           />
           <input
             type="password"
             placeholder="Password"
-            className="border p-2 mb-4"
+            className="border p-2 mb-4 rounded-lg"
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
           />
-          <button type="submit" className="bg-navbar p-2">
+          <button type="submit" className="bg-navbar p-2 rounded-lg">
             Signup
           </button>
         </form>
+        {error && <p className="text-[red]">{error}</p>}
         <a href="/auth/login" className="text-[#8d8de7]">
           Already have an account? Login
         </a>

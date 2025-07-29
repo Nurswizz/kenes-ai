@@ -23,7 +23,7 @@ const useApi = () => {
         headers,
       });
 
-      if (response.status === 401 || response.status === 403) {
+      if ((response.status === 401 || response.status === 403) && token) {
         if (retryCount === 0) {
           console.error("Session expired, redirecting to login.");
           localStorage.clear();
@@ -40,8 +40,6 @@ const useApi = () => {
         if (!refreshResponse.ok) {
           localStorage.clear();
           window.location.href = '/auth/login';
-          console.error("Failed to refresh token, redirecting to login.");
-          throw new Error("Refresh token expired.");
         }
 
         const data = await refreshResponse.json();
@@ -52,7 +50,7 @@ const useApi = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`HTTP error! ${response.status}: ${errorData.error}`);
+        return Promise.reject({ error: errorData || "An error occurred" });
       }
 
       return await response.json();

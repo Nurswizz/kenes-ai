@@ -18,6 +18,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -26,7 +27,6 @@ const Login = () => {
   }, []);
 
   const handleSubmit = async () => {
-    // валидация
     if (!user.email || !user.password) {
       alert("Please fill in all fields");
       return;
@@ -48,17 +48,22 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       })) as AuthUser;
-      console.log("Login response:", response);
+
       if (response?.user) {
         login(response);
         window.location.href = '/dashboard';
         setUser({ email: "", password: "" });
       } else {
-        alert("Signup failed. Please try again.");
+        alert("Login failed. Please try again.");
       }
     } catch (error: any) {
-      console.log("Signup error:", error.message);
-      alert(error.message || "An error occurred during signup");
+      if (error.error.status === 404) {
+        setError("Invalid email.");
+      } else if (error.error.status === 401) {
+        setError("Invalid password. Please try again.");
+      } else {
+      setError("An error occurred while logging in.");
+      }
     }
   };
   return (
@@ -70,10 +75,11 @@ const Login = () => {
           e.preventDefault();
           handleSubmit();
         }}>
-          <input type="email" placeholder="Email" className="border p-2 mb-4" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
-          <input type="password" placeholder="Password" className="border p-2 mb-4" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} />
-          <button type="submit" className="bg-navbar p-2">Login</button>
+          <input type="email" placeholder="Email" className="border p-2 mb-4 rounded-lg" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+          <input type="password" placeholder="Password" className="border p-2 mb-4 rounded-lg" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} />
+          <button type="submit" className="bg-navbar p-2 rounded-lg">Login</button>
         </form>
+        {error && <p className="text-[red]">{error}</p>}
         <a href="/auth/signup" className="text-[#8d8de7]">Don't have an account? Signup</a>
       </div>
     </div>
