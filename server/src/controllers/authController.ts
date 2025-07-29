@@ -43,7 +43,7 @@ const authController = {
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "none",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({ user: transformedUser, accessToken, status: 200 });
@@ -82,11 +82,11 @@ const authController = {
         .cookie("refreshToken", refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "none",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({ user: transformedUser, accessToken, status: 201 });
-    } catch (error ) {
+    } catch (error) {
       console.error("Error registering user:", error);
       if ((error as any).name === "TokenExpiredError") {
         return res.status(401).json({ message: "Refresh token expired" });
@@ -107,13 +107,18 @@ const authController = {
   },
   refreshToken: async (req: Request, res: Response): Promise<any> => {
     const { refreshToken } = req.cookies;
+    console.log(refreshToken);
     if (!refreshToken) {
       return res
         .status(401)
         .json({ message: "Refresh token is required", status: 401 });
     }
     try {
-      const decoded = verifyToken(refreshToken, "refresh") as import("jsonwebtoken").JwtPayload & { id: string };
+      const decoded = verifyToken(
+        refreshToken,
+        "refresh"
+      ) as import("jsonwebtoken").JwtPayload & { id: string };
+
       if (!decoded || typeof decoded === "string") {
         return res
           .status(401)
@@ -130,12 +135,12 @@ const authController = {
         .cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "none",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .json({ accessToken, status: 200 });
-    } catch (error) {
-      console.error("Error refreshing token:", error);
+    } catch (error: any) {
+      console.error("Error refreshing token:", error.message);
       return res
         .status(500)
         .json({ message: "Internal server error", status: 500 });

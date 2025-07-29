@@ -7,12 +7,15 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ): Promise<any> => {
-  const token = req.headers.authorization?.split(" ")[1] || "";
-  console.log(token);
+  try {
+    const token = req.headers.authorization?.split(" ")[1] || "";
   if (!token) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
-
+  if (!req.cookies.refreshToken) {
+    console.error("Unauthorized: No refresh token provided");
+    return res.status(401).json({ error: "Unauthorized: No refresh token provided" });
+  }
   const user = await verifyToken(token, "access");
 
   if (!user) {
@@ -22,4 +25,10 @@ export const authMiddleware = async (
   const { id } = user as JwtPayload & { id: string };
   req.user = { id };
   next();
+  } catch(error: any) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Unauthorized: Token expired" });
+    }
+    return res.status(401).json({ error: "Unauthorized: Invalid token" });
+  }
 };
