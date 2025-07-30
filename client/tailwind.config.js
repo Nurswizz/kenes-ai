@@ -7,6 +7,7 @@ export default {
   theme: {
     colors: {
       navbar: "#cfdcff",
+      darkerNavbar: "#a3b0d4",
       primary: "#1e3a2b",
       white: "#ffffff",
     },
