@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
 import useApi from "../hooks/useApi";
 import useAuth from "../hooks/useAuth";
+
+import { Loader2Icon } from "lucide-react";
 interface AuthUser {
   accessToken: string;
   user: {
@@ -15,6 +17,7 @@ const Signup = () => {
   const { fetchData } = useApi();
   const { login, isAuthenticated } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -29,19 +32,23 @@ const Signup = () => {
   }, []);
 
   const handleSubmit = async () => {
+    setLoading(true);
     // валидация
     if (!user.firstName || !user.lastName || !user.email || !user.password) {
       setError("Please fill in all fields");
+      setLoading(false);
       return;
     }
 
     if (user.password.length < 6) {
       setError("Password must be at least 6 characters long");
+      setLoading(false);
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(user.email)) {
       setError("Please enter a valid email address");
+      setLoading(false);
       return;
     }
 
@@ -50,6 +57,7 @@ const Signup = () => {
       !/^[a-zA-Z]+$/.test(user.lastName)
     ) {
       setError("First and Last names must contain only letters");
+      setLoading(false);
       return;
     }
 
@@ -62,7 +70,7 @@ const Signup = () => {
 
       if (response?.user) {
         login(response);
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
         setUser({ firstName: "", lastName: "", email: "", password: "" });
       } else {
         setError("Signup failed. Please try again.");
@@ -76,6 +84,8 @@ const Signup = () => {
         setError(error.message || "An error occurred during signup");
       }
       console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,7 +130,7 @@ const Signup = () => {
             onChange={(e) => setUser({ ...user, password: e.target.value })}
           />
           <button type="submit" className="bg-navbar p-2 rounded-lg">
-            Signup
+            {loading ? <Loader2Icon className="animate-spin" /> : "Signup"}
           </button>
         </form>
         {error && <p className="text-[red]">{error}</p>}

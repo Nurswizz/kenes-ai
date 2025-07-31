@@ -2,6 +2,7 @@ import { Navbar } from '../components/Navbar';
 import { useEffect, useState } from "react";
 import useApi from "../hooks/useApi";
 import useAuth from "../hooks/useAuth";
+import { Loader2Icon } from 'lucide-react';
 interface AuthUser {
   accessToken: string;
   user: {
@@ -14,6 +15,7 @@ interface AuthUser {
 const Login = () => {
   const { fetchData } = useApi();
   const { login, isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -27,18 +29,22 @@ const Login = () => {
   }, []);
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (!user.email || !user.password) {
       alert("Please fill in all fields");
+      setLoading(false);
       return;
     }
 
     if (user.password.length < 6) {
       alert("Password must be at least 6 characters long");
+      setLoading(false);
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(user.email)) {
       alert("Please enter a valid email address");
+      setLoading(false);
       return;
     }
 
@@ -64,6 +70,8 @@ const Login = () => {
       } else {
       setError("An error occurred while logging in.");
       }
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -77,7 +85,7 @@ const Login = () => {
         }}>
           <input type="email" placeholder="Email" className="border p-2 mb-4 rounded-lg" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
           <input type="password" placeholder="Password" className="border p-2 mb-4 rounded-lg" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} />
-          <button type="submit" className="bg-navbar p-2 rounded-lg">Login</button>
+          <button type="submit" className="bg-navbar p-2 rounded-lg">{loading ? <Loader2Icon className="animate-spin" /> : "Login"}</button>
         </form>
         {error && <p className="text-[red]">{error}</p>}
         <a href="/auth/signup" className="text-[#8d8de7]">Don't have an account? Signup</a>

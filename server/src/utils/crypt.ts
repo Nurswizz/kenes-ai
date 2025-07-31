@@ -8,6 +8,8 @@ const hashPassword = async (password: string) => {
 
 const comparePassword = async (password: string, hashedPassword: string) => {
     if (!password || !hashedPassword) {
+        console.log("hashed password", hashedPassword);
+        console.log("password", password);
         throw new Error("Password or hashed password is missing");
     }
     return await bcrypt.compare(password, hashedPassword);
