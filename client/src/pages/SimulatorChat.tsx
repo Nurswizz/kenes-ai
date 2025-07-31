@@ -3,7 +3,6 @@ import Sidebar from "../components/Sidebar";
 import { useEffect, useRef, useState } from "react";
 import useApi from "../hooks/useApi";
 import { LoaderCircle } from "lucide-react";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { useTranslation } from "react-i18next";
 
 interface IChatMessage {
@@ -25,7 +24,6 @@ const SimulatorChat = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const isMemberstackReady = useMemberstackReady();
   const [scenario, setScenario] = useState<string>("");
   const { t } = useTranslation();
 
@@ -35,7 +33,7 @@ const SimulatorChat = () => {
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
-    if (!id || !isMemberstackReady) return;
+    if (!id) return;
 
     const userMsg: IChatMessage = {
       from: "user",
@@ -65,7 +63,7 @@ const SimulatorChat = () => {
   };
 
   useEffect(() => {
-    if (!id || !isMemberstackReady) return;
+    if (!id) return;
 
     const getChatInfo = async () => {
       try {
@@ -97,7 +95,7 @@ const SimulatorChat = () => {
     };
     getChatInfo();
     fetchMessages();
-  }, [id, isMemberstackReady]);
+  }, [id]);
 
   useEffect(() => {
     scrollToBottom();

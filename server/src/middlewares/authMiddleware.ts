@@ -1,31 +1,34 @@
-import memberstack from "@memberstack/admin";
 import { NextFunction, Request, Response } from "express";
-import { userService } from "../services/userService";
-const apiKey = process.env.MEMBERSTACK_SECRET_KEY;
-if (!apiKey) {
-  throw new Error("MEMBERSTACK_API_KEY is not defined");
-}
-const memberstackClient = memberstack.init(apiKey);
+import { JwtPayload } from "jsonwebtoken";
+import { verifyToken } from "../utils/token";
 
 export const authMiddleware = async (
   req: Request & { user?: { id: string } },
   res: Response,
   next: NextFunction
 ): Promise<any> => {
-  const token = req.headers.authorization?.split(" ")[1] || "";
+  try {
+    const token = req.headers.authorization?.split(" ")[1] || "";
   if (!token) {
-    console.log("No token provided in request headers");
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
-
-  const user = await memberstackClient.verifyToken({
-    token,
-  });
+  if (!req.cookies.refreshToken) {
+    console.error("Unauthorized: No refresh token provided");
+    return res.status(401).json({ error: "Unauthorized: No refresh token provided" });
+  }
+  const user = await verifyToken(token, "access");
 
   if (!user) {
     return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
-  const { id } = await userService.getUserByMemberStackId(user.id);
+
+  const { id } = user as JwtPayload & { id: string };
   req.user = { id };
   next();
+  } catch(error: any) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Unauthorized: Token expired" });
+    }
+    return res.status(401).json({ error: "Unauthorized: Invalid token" });
+  }
 };

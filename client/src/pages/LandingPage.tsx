@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import clsx from "clsx";
-import logo from "../assets/logo.png";
 import man from "../assets/landing_page_man.png";
 import { MessageCircle, User2, CheckCircle, StarsIcon } from "lucide-react";
 import feedback_logo from "../assets/feedback.svg";
-import { useMemberstack } from "../context/MemberstackProvider";
-import useApi from "../hooks/useApi";
+import { Navbar, handleStart } from "../components/Navbar";
 
 type CardProps = {
   icon: React.ReactNode;
@@ -14,80 +12,6 @@ type CardProps = {
   className?: string;
 };
 
-const handleStart = async <T = unknown,>(
-  fetchData: (endpoint: string, options?: RequestInit) => Promise<T>,
-  memberstackInstance: any
-) => {
-  try {
-    const member = await memberstackInstance.getCurrentMember();
-
-    if (member?.data) {
-      const memberObj = member?.data;
-      const memberData = {
-        id: memberObj.id,
-        email: memberObj?.auth?.email,
-        firstName: memberObj?.customFields?.["first-name"],
-        lastName: memberObj?.customFields?.["last-name"],
-        memberstackId: memberObj?.id,
-        plan: memberObj?.planConnections?.[0]?.type ?? "FREE",
-      };
-
-      localStorage.setItem("user", JSON.stringify(memberData));
-      await fetchData("/auth/sync-member", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(memberData),
-      });
-
-      window.location.href = "/dashboard";
-
-      return;
-    }
-
-    await memberstackInstance.openModal("SIGNUP", {
-      signup: {
-        plans: [import.meta.env.VITE_PLAN_FREE_ID!],
-      },
-    });
-
-    const memberRefetched = await memberstackInstance.getCurrentMember();
-    const memberDataObj = memberRefetched?.data;
-
-    if (!memberDataObj) {
-      console.error("Failed to fetch member data after signup");
-      return;
-    }
-
-    const memberData = {
-      id: memberDataObj.id,
-      email: memberDataObj?.auth?.email,
-      firstName: memberDataObj?.customFields?.["first-name"],
-      lastName: memberDataObj?.customFields?.["last-name"],
-      memberstackId: memberDataObj?.id,
-      plan: memberDataObj?.planConnections?.[0]?.type ?? "FREE",
-    };
-
-    localStorage.setItem("user", JSON.stringify(memberData));
-
-    await fetchData("/auth/sync-member", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(memberData),
-    });
-
-    if (memberData.id) {
-      window.location.href = "/dashboard";
-    } else {
-      console.error("Member ID missing — cannot redirect.");
-    }
-  } catch (err) {
-    console.error("Signup error:", err);
-  }
-};
 
 const Card = ({ icon, header, description, className }: CardProps) => (
   <div
@@ -104,76 +28,6 @@ const Card = ({ icon, header, description, className }: CardProps) => (
   </div>
 );
 
-const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { fetchData } = useApi();
-  const memberstack = useMemberstack();
-  return (
-    <nav className="bg-navbar shadow-md w-full absolute top-0 left-0 z-50 flex items-center justify-between px-6 xl:px-40">
-      <button onClick={() => (window.location.href = "/")}>
-        <img src={logo} alt="logo" width={160} className="xl:w-[200px]" />
-      </button>
-
-      <div className="xl:hidden">
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="focus:outline-none"
-          aria-label="Open menu"
-        >
-          <svg
-            width="32"
-            height="32"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M4 8h24M4 16h24M4 24h24" />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        className={clsx(
-          "absolute xl:static top-16 left-0 w-full xl:w-auto bg-navbar xl:bg-transparent transition-all duration-200 z-40",
-          menuOpen ? "block" : "hidden",
-          "xl:block"
-        )}
-      >
-        <ul className="flex flex-col xl:flex-row xl:space-x-6 text-2xl items-center">
-          {["Инструменты", "Как это работает", "Блог", "Помощь"].map(
-            (label, i) => (
-              <li key={i}>
-                <a
-                  href="/"
-                  className="px-4 py-2 transition rounded-xl hover:bg-[#6d7487] block"
-                >
-                  {label}
-                </a>
-              </li>
-            )
-          )}
-          <li>
-            <button
-              onClick={() => {
-                handleStart(fetchData, memberstack);
-              }}
-              className="bg-primary text-[#ffffff] rounded-xl py-4 px-6 text-white transition hover:bg-[#6d7487] w-full xl:w-auto"
-            >
-              Начать
-            </button>
-          </li>
-        </ul>
-      </div>
-
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-30 z-30 xl:hidden"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-    </nav>
-  );
-};
 
 const Feedback = ({
   header,
@@ -199,8 +53,6 @@ const Feedback = ({
 );
 
 const HeroSection = () => {
-  const { fetchData } = useApi();
-  const memberstack = useMemberstack();
 
   return (
     <header className="flex flex-col-reverse xl:flex-row items-center justify-between w-full px-4 sm:px-10 xl:px-40 py-20 gap-10 mt-20">
@@ -219,7 +71,7 @@ const HeroSection = () => {
 
         <div className="flex flex-wrap gap-4 mt-4">
           <button
-            onClick={() => handleStart(fetchData, memberstack)}
+            onClick={() => handleStart()}
             className="bg-primary text-white px-6 py-3 rounded-2xl font-medium text-base sm:text-lg transition hover:bg-[#6d7487]"
           >
             Начать работу
@@ -292,8 +144,6 @@ const FeaturesSection = () => (
 );
 
 const SubscriptionSection = () => {
-  const { fetchData } = useApi();
-  const memberstack = useMemberstack();
   const plans = [
     {
       title: "Базовый",
@@ -329,7 +179,7 @@ const SubscriptionSection = () => {
               {plan.description}
             </h3>
             <button
-              onClick={() => handleStart(fetchData, memberstack)}
+              onClick={() => handleStart()}
               className="mt-6 bg-primary px-8 py-3 text-lg sm:text-xl font-semibold text-white rounded-lg"
             >
               {plan.buttonText}
@@ -446,9 +296,6 @@ const FaqSection = () => {
 };
 
 const ComplementarySection = () => {
-  const { fetchData } = useApi();
-  const memberstack = useMemberstack();
-
   return (
     <section className="w-full bg-[#f8f4f0] py-16 px-4 sm:px-10 xl:px-40 flex flex-col lg:flex-row items-center justify-between gap-10">
       {/* Левая часть — текст */}
@@ -465,7 +312,7 @@ const ComplementarySection = () => {
       {/* Правая часть — кнопки */}
       <div className="flex flex-col items-center gap-4 w-full max-w-sm">
         <button
-          onClick={() => handleStart(fetchData, memberstack)}
+          onClick={() => handleStart()}
           className="bg-primary text-white rounded-xl py-3 px-6 font-semibold text-base sm:text-lg transition hover:bg-[#6d7487] w-full"
         >
           Начать

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import useApi from "../hooks/useApi";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -76,14 +75,12 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState<IActivity[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
-  const isMemberstackReady = useMemberstackReady();
   const { fetchData } = useApi();
   const { t } = useTranslation();
   
 
   useEffect(() => {
     const fetchUsage = async () => {
-      if (!isMemberstackReady) return;
 
       try {
         const usageData = await fetchData<{ usageRecords: IUsageRecord[] }>(
@@ -123,7 +120,7 @@ const Dashboard = () => {
     };
 
     fetchUsage();
-  }, [isMemberstackReady]);
+  }, []);
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">

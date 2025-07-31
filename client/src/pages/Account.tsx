@@ -1,71 +1,117 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { useMemberstack } from "../context/MemberstackProvider";
 import { preconnect } from "react-dom";
 import { LoaderCircle } from "lucide-react";
 import useApi from "../hooks/useApi";
-import { useMemberstackReady } from "../context/MemberstackProvider";
 import { useTranslation } from "react-i18next";
+import useAuth from "../hooks/useAuth";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
-  const memberstack = useMemberstack();
   const [loading, setLoading] = useState<boolean>(false);
-  const {fetchData} = useApi();
-  const memberstackReady = useMemberstackReady();
+  const { fetchData } = useApi();
   const { t } = useTranslation();
-  
+  const { logout } = useAuth();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [newData, setNewData] = useState<any>({
+    fullName: user?.firstName + " " + user?.lastName || "",
+    email: user?.email || "",
+  });
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    
+    if (user) {
+      setNewData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email,
+      });
+    }
+  }, [user]);
+  useEffect(() => {
     const fetchUser = async () => {
-      if (!memberstackReady) {
-        return;
-      }
-
       try {
-        const response = await fetchData(`/users/me`);
+        const response = (await fetchData(`/users/me`)) as any;
         setUser(response);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        alert("An error occurred while fetching user data. Please try again later.");
+        alert(
+          "An error occurred while fetching user data. Please try again later."
+        );
       }
-    }
+    };
     fetchUser();
-  }, [memberstackReady])
+  }, [localStorage.getItem("user")]);
 
-  
   useEffect(() => {
     preconnect(import.meta.env.VITE_API_URL);
-    
   }, []);
   const handleLogOut = async () => {
     setLoading(true);
-    await memberstack.logout();
-    localStorage.removeItem("user");
-    setLoading(false);
-    window.location.href = "/";
-  };
-  
-  const handleUpgrade = async () => {
-    const planId = import.meta.env.VITE_PLAN_PRO_ID;
-    if (!planId) {
-      console.error("Plan ID is not defined in environment variables.");
-      return;
-    }
     try {
-      // checkout and upgrading through memberstack
-
-      await fetchData("/users/plan", {
-        method: "PUT",
-        body: JSON.stringify({ plan: "Pro" }),
-      });
+      await logout();
     } catch (error) {
-      console.error("Error upgrading plan:", error);
-      alert("An error occurred while upgrading. Please try again later.");
+      console.error("Error logging out:", error);
+      alert("An error occurred while logging out. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
+  const handleEdit = async () => {
+    if (isEditing) {
+      if (!newData.firstName || !newData.lastName || !newData.email) {
+        setError("Please fill in all fields.");
+        return;
+      }
+      if (
+        newData.firstName === user.firstName &&
+        newData.lastName === user.lastName &&
+        newData.email === user.email
+      ) {
+        setError("No changes made.");
+        setIsEditing(false);
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(newData.email)) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+      const updatedData = {
+        firstName: newData.firstName,
+        lastName: newData.lastName,
+        email: newData.email,
+      };
+      try {
+        await fetchData(`/users/me`, {
+          method: "PUT",
+          body: JSON.stringify(updatedData),
+        });
+        setUser((prev: any) => ({
+          ...prev,
+          ...updatedData,
+        }));
+        localStorage.setItem("user", JSON.stringify({ ...user, ...updatedData }));
+        setError(null);
+        alert("User details updated successfully.");
+      } catch (error) {
+        console.error("Error updating user details:", error);
+        setError(
+          "An error occurred while updating user details. Please try again later."
+        );
+      }
+    }
 
+    setIsEditing((prev) => !prev);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setNewData({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email,
+    });
+  };
 
   if (!user) return <div className="text-center p-10">Loading...</div>;
   return (
@@ -76,27 +122,71 @@ const Account = () => {
         <div className="mt-4">
           <h1 className="text-2xl font-semibold">{t("full-name")}</h1>
           <h3>
-            {
-              user.firstName + user.lastName
-                ? `${user.firstName} ${user.lastName}`
-                : t("none")
-            }
+            {isEditing ? (
+              <div>
+                <input
+                  type="text"
+                  value={newData.firstName}
+                  onChange={(e) =>
+                    setNewData({ ...newData, firstName: e.target.value })
+                  }
+                  className="border p-2 rounded w-full"
+                />
+                <input
+                  type="text"
+                  value={newData.lastName}
+                  onChange={(e) =>
+                    setNewData({ ...newData, lastName: e.target.value })
+                  }
+                  className="border p-2 rounded w-full mt-2"
+                />
+              </div>
+            ) : user.firstName + user.lastName ? (
+              `${user.firstName} ${user.lastName}`
+            ) : (
+              t("none")
+            )}
           </h3>
         </div>
         <div className="mt-4">
           <h1 className="text-2xl font-semibold">Email</h1>
-          <h3>{user.email}</h3>
+          {isEditing ? (
+            <input
+              type="email"
+              value={newData.email}
+              onChange={(e) =>
+                setNewData({ ...newData, email: e.target.value })
+              }
+              className="border p-2 rounded w-full"
+            />
+          ) : (
+            <h3>{user.email}</h3>
+          )}
         </div>
         <div className="mt-4">
           <h1 className="text-2xl font-semibold">Plan</h1>
           <h3>{user.plan ? user.plan : "Free"}</h3>
         </div>
-        <button onClick={handleUpgrade} className="mt-4 bg-navbar py-2 px-4 rounded w-[150px]">
-          Upgrade to Pro
+        {error && (
+          <div className="text-[red] mt-2">
+            {error}
+          </div>
+        )}
+
+        <button
+          onClick={handleEdit}
+          className="mt-4 bg-navbar py-2 px-4 rounded w-[150px] flex justify-center"
+        >
+          {isEditing ? t("save") : t("edit")}
         </button>
-        <button className="mt-4 bg-navbar py-2 px-4 rounded w-[150px] flex justify-center">
-          {t("edit")}
-        </button>
+        {isEditing && (
+          <button
+            onClick={handleCancel}
+            className="mt-4 bg-navbar py-2 px-4 rounded w-[150px] flex justify-center"
+          >
+            {t("cancel")}
+          </button>
+        )}
         <div>
           <button
             onClick={handleLogOut}

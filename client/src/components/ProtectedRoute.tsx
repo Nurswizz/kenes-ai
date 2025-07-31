@@ -6,9 +6,9 @@ const ProtectedRoute: React.FC<{
   const [, setUser] = useState();
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
-    console.log(localStorage);
-    if (!localUser || Object.keys(localUser).length === 0) {
-      // window.location.href = "/";
+    const token = localStorage.getItem("accessToken");
+    if (!localUser || Object.keys(localUser).length === 0 || !token) {
+      window.location.href = "/";
       console.error("No user found in localStorage, redirecting to home.", localUser, Object.keys(localUser).length);
     } else {
       setUser(localUser);
