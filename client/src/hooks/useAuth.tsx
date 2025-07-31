@@ -13,9 +13,9 @@ interface AuthUser {
 const useAuth = () => {
     const { fetchData } = useApi();
     const login = (user: AuthUser) => {
-        console.log("Logging in user:", user);
         localStorage.setItem('user', JSON.stringify(user.user));
         localStorage.setItem('accessToken', user.accessToken || '');
+        localStorage.setItem('language', "ru");
     }
 
     const logout = async () => {

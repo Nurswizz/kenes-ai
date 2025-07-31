@@ -48,5 +48,13 @@
     "proffessional": "Professional",
     "respectful": "Respectful",
     "refined-message": "Refined Message",
-    "save": "Save"
+    "save": "Save",
+    "all-fields-required": "All fields are required",
+    "suggestion1": "Late delivery of order",
+    "suggestion2": "Internship confirmation needed",
+    "suggestion3": "Request for deferral of payment",
+    "recipient1": "John Doe",
+    "recipient2": "Jane Smith",
+    "recipient3": "Alice Johnson",
+    "other": "Other"
 }

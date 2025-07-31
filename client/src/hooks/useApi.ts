@@ -23,7 +23,7 @@ const useApi = () => {
         headers,
       });
 
-      if ((response.status === 401 || response.status === 403) && token) {
+      if ((response.status === 401) && token) {
         if (retryCount === 0) {
           console.error("Session expired, redirecting to login.");
           localStorage.clear();

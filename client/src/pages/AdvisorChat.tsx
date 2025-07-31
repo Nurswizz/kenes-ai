@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
+import Suggestion from "../components/Suggestion";
 import useApi from "../hooks/useApi";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
@@ -15,6 +16,12 @@ interface Response {
   messages: ChatMessage[];
 }
 
+const suggestions = [ 
+  "Что такое ИП",
+  "Как зарегистрировать компанию",
+  "Как подать налоговую декларацию",
+];
+
 const AdvisorChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
@@ -23,6 +30,7 @@ const AdvisorChat = () => {
   const { fetchData } = useApi();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
 
   const { t } = useTranslation();
 
@@ -155,7 +163,19 @@ const AdvisorChat = () => {
               </>
             )}
           </div>
-
+          {
+            inputText.length === 0 && (
+              <div className="flex flex-wrap gap-2 p-4 bg-gray-100 border-t">
+                {suggestions.map((suggestion, index) => (
+                  <Suggestion
+                    key={index}
+                    suggestion={suggestion}
+                    setValue={setInputText}
+                  />
+                ))}
+              </div>
+            )
+          }
           {/* Input */}
           <div className="p-4 border-t flex items-center gap-2">
             <input

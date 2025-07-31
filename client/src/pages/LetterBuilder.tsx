@@ -1,16 +1,9 @@
 import Sidebar from "../components/Sidebar";
 import Suggestion from "../components/Suggestion";
 import useApi from "../hooks/useApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-const suggestions = [
-  "Задержка доставки заказа",
-  "Подтверждение стажировки нужно",
-  "Просьба об отсрочке",
-  "Запрос на изменение условий контракта",
-]
 
 const LetterBuilder = () => {
   const { fetchData } = useApi();
@@ -20,22 +13,44 @@ const LetterBuilder = () => {
   const [message, setMessage] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [sender, setSender] = useState("");
+  const [customRecipient, setCustomRecipient] = useState("");
+  const suggestions = [t("suggestion1"), t("suggestion2"), t("suggestion3")];
+  const firstName =
+    JSON.parse(localStorage.getItem("user") || "{}").firstName || "";
+  const lastName =
+    JSON.parse(localStorage.getItem("user") || "{}").lastName || "";
+
+  const recipientSuggestions = [
+    t("recipient1"),
+    t("recipient2"),
+    t("recipient3"),
+    t("other"),
+  ];
+  useEffect(() => {
+    setSender(`${firstName} ${lastName}`);
+  }, [firstName, lastName]);
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
-    if (!recipientName || !sender || !message) {
+    if (!sender || !message) {
       alert(t("all-fields-required"));
       setLoading(false);
       return;
     }
-
+    if (recipientName === t("other") && !customRecipient) {
+      alert(t("all-fields-required"));
+      setLoading(false);
+      return;
+    }
     try {
+      const recipient =
+        recipientName === t("other") ? customRecipient : recipientName;
       const response = (await fetchData("/tools/generate-letter", {
         method: "POST",
         body: JSON.stringify({
           sender: sender,
           details: message,
-          recipient: recipientName,
+          recipient: recipient,
           feature: "letter",
         }),
       })) as any;
@@ -69,14 +84,36 @@ const LetterBuilder = () => {
               <label className="text-lg font-semibold mb-1">
                 {t("recipient-name")}
               </label>
-              <input
-                type="text"
-                name="recipientName"
+              {
+                // it should consist of options recipientSuggestions
+              }
+              <select
                 className="border-2 border-gray-300 p-2 rounded-lg"
-                placeholder={t("recipient-name")}
+                name="recipientName"
+                id="recipientName"
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
-              />
+              >
+                {recipientSuggestions.map((suggestion, index) => (
+                  <option
+                    key={index}
+                    value={suggestion}
+                    className="text-[black]"
+                  >
+                    {suggestion}
+                  </option>
+                ))}
+              </select>
+              {recipientName === t("other") && (
+                <input
+                  type="text"
+                  name="otherRecipient"
+                  className="border-2 border-gray-300 p-2 rounded-lg mt-2"
+                  placeholder={t("recipient-name")}
+                  value={customRecipient}
+                  onChange={(e) => setCustomRecipient(e.target.value)}
+                />
+              )}
             </div>
 
             <div className="flex flex-col">
