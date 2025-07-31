@@ -125,5 +125,13 @@ const userService = {
 
     return user;
   },
+  async checkEmailExists(email: string) {
+    if (!email) {
+      throw new Error("Email is required");
+    }
+
+    const user = await User.findOne({ email });
+    return !!user;
+  },
 };
 export { userService };

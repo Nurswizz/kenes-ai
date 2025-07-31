@@ -15,6 +15,8 @@ dotenv.config();
 
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/kenes-ai";
 
+console.log("Connecting to MongoDB with URI:", mongoUri);
+
 mongoose
   .connect(mongoUri)
   .then(() => console.log("Connected to MongoDB"))

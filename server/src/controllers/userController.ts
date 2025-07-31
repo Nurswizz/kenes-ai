@@ -137,6 +137,10 @@ export const userController = {
     }
 
     try {
+      const emailExists = await userService.checkEmailExists(email);
+      if (emailExists) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
       const updatedUser = await userService.updateEmail(userId, email);
       return res.status(200).json(updatedUser);
     } catch (error: any) {

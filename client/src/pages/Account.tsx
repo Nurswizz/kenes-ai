@@ -93,8 +93,11 @@ const Account = () => {
         localStorage.setItem("user", JSON.stringify({ ...user, ...updatedData }));
         setError(null);
         alert("User details updated successfully.");
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error updating user details:", error);
+        if (error.status === 400) {
+          setError("Email already exists. Please use a different email.");
+        }
         setError(
           "An error occurred while updating user details. Please try again later."
         );
