@@ -85,7 +85,9 @@ const Login = () => {
         }}>
           <input type="email" placeholder="Email" className="border p-2 mb-4 rounded-lg" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
           <input type="password" placeholder="Password" className="border p-2 mb-4 rounded-lg" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} />
-          <button type="submit" className="bg-navbar p-2 rounded-lg">{loading ? <Loader2Icon className="animate-spin" /> : "Login"}</button>
+          <button type="submit" className="bg-navbar p-2 rounded-lg flex justify-center items-center">
+            {loading ? <Loader2Icon className="animate-spin" /> : "Login"}
+          </button>
         </form>
         {error && <p className="text-[red]">{error}</p>}
         <a href="/auth/signup" className="text-[#8d8de7]">Don't have an account? Signup</a>

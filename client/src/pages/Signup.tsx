@@ -129,7 +129,7 @@ const Signup = () => {
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
           />
-          <button type="submit" className="bg-navbar p-2 rounded-lg">
+          <button type="submit" className="bg-navbar p-2 rounded-lg justify-center items-center">
             {loading ? <Loader2Icon className="animate-spin" /> : "Signup"}
           </button>
         </form>
