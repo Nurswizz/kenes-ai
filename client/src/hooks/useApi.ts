@@ -12,7 +12,7 @@ const useApi = () => {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
         ...(options.headers || {}),
-      };
+      } as any;
 
       if (token) headers.Authorization = `Bearer ${token}`;
 
