@@ -106,7 +106,6 @@ const authController = {
   },
   refreshToken: async (req: Request, res: Response): Promise<any> => {
     const { refreshToken } = req.cookies;
-    console.log(refreshToken);
     if (!refreshToken) {
       return res
         .status(401)

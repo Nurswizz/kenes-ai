@@ -2,6 +2,7 @@ import axios from "axios";
 import { config } from "dotenv";
 import { Letter, ILetter } from "../models/Letter";
 import { aiService } from "./aiService";
+import { userService } from "./userService";
 config();
 
 const pollUntilReady = async (id: string, maxRetries = 20, delay = 2000) => {
@@ -41,20 +42,23 @@ const generateLetter = async (
           template_uuid: process.env.LETTER_TEMPLATE_UUID,
           layers: {
             date: {
-              text: new Date().toLocaleDateString("en-US", {
+              text: `Дата: ${new Date().toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-              }),
+              })}`,
             },
             subject: {
-              text: letter.subject,
+              text: `Тема: ${letter.subject}`,
             },
             body: {
-              text: letter.body,
+              text: `Ваше обращение: ${letter.body}`,
             },
             recipient: {
-              text: recipient,
+              text: `Кому: ${recipient}`,
+            },
+            sender: {
+              text: `От: ${sender}`,
             },
           },
         },
