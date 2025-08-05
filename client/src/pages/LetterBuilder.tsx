@@ -11,7 +11,7 @@ const LetterBuilder = () => {
   const [link, setLink] = useState("");
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
-  const [recipientName, setRecipientName] = useState("");
+  const [recipientName, setRecipientName] = useState(t("recipient1"));
   const [sender, setSender] = useState("");
   const [customRecipient, setCustomRecipient] = useState("");
   const suggestions = [t("suggestion1"), t("suggestion2"), t("suggestion3")];
