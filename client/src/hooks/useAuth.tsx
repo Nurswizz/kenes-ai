@@ -25,8 +25,9 @@ const useAuth = () => {
     }
 
     const isAuthenticated = () => {
-        const user = localStorage.getItem('user');
-        return user !== null;
+        const user = localStorage.getItem('user') && localStorage.getItem('user') || '{}' ;
+        const accessToken = localStorage.getItem('accessToken');
+        return user !== null && accessToken !== null;
     }
 
     return { login, logout, isAuthenticated };
