@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Suggestion from "../components/Suggestion";
+import Upsell from "../components/Upsell";
 import useApi from "../hooks/useApi";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
@@ -16,7 +17,12 @@ interface Response {
   messages: ChatMessage[];
 }
 
-const suggestions = [ 
+interface AccessResponse {
+  canAccess: boolean;
+  status: number;
+}
+
+const suggestions = [
   "Что такое ИП",
   "Как зарегистрировать компанию",
   "Как подать налоговую декларацию",
@@ -30,7 +36,20 @@ const AdvisorChat = () => {
   const { fetchData } = useApi();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [canAccessChat, setCanAccessChat] = useState(true);
 
+  useEffect(() => {
+    const checkFeatureAccess = async () => {
+      const response = (await fetchData("/user/can-access-feature", {
+        method: "POST",
+        body: JSON.stringify({ featureKey: "chat" }),
+        headers: { "Content-Type": "application/json" },
+      })) as AccessResponse;
+      setCanAccessChat(response.canAccess);
+    };
+
+    checkFeatureAccess();
+  }, []);
 
   const { t } = useTranslation();
 
@@ -57,9 +76,9 @@ const AdvisorChat = () => {
       "Источники",
       "Құқықтық бағалау",
       "Қолданылатын заңнама",
-      "Тәжірибе", 
-      "Заң қолдану", 
-      "Дереккөздер"
+      "Тәжірибе",
+      "Заң қолдану",
+      "Дереккөздер",
     ];
 
     for (const word of keywords) {
@@ -71,7 +90,6 @@ const AdvisorChat = () => {
   }
 
   useEffect(() => {
-
     const fetchInitMessages = async () => {
       try {
         const response = (await fetchData(
@@ -130,26 +148,28 @@ const AdvisorChat = () => {
               </div>
             ) : (
               <>
-                {messages.length > 0 ? messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-3 rounded-md w-fit max-w-[80%] ${
-                      msg.from === "user"
-                        ? "bg-navbar self-end text-white"
-                        : "bg-[#cdcdcd] self-start"
-                    }`}
-                  >
+                {messages.length > 0 ? (
+                  messages.map((msg, idx) => (
                     <div
-                      className={`prose max-w-none text-sm ${
-                        msg.from === "user" ? "text-white" : "text-black"
+                      key={idx}
+                      className={`p-3 rounded-md w-fit max-w-[80%] ${
+                        msg.from === "user"
+                          ? "bg-navbar self-end text-white"
+                          : "bg-[#cdcdcd] self-start"
                       }`}
                     >
-                      <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
-                        {prepareMarkdown(msg.text)}
-                      </ReactMarkdown>
+                      <div
+                        className={`prose max-w-none text-sm ${
+                          msg.from === "user" ? "text-white" : "text-black"
+                        }`}
+                      >
+                        <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
+                          {prepareMarkdown(msg.text)}
+                        </ReactMarkdown>
+                      </div>
                     </div>
-                  </div>
-                )) : (
+                  ))
+                ) : (
                   <div className="p-3 rounded-md w-fit max-w-[80%] bg-[#cdcdcd] self-start italic opacity-70">
                     No messages yet. Start the conversation!
                   </div>
@@ -163,19 +183,20 @@ const AdvisorChat = () => {
               </>
             )}
           </div>
-          {
-            inputText.length === 0 && (
-              <div className="flex flex-wrap gap-2 p-4 bg-gray-100 border-t">
-                {suggestions.map((suggestion, index) => (
-                  <Suggestion
-                    key={index}
-                    suggestion={suggestion}
-                    setValue={setInputText}
-                  />
-                ))}
-              </div>
-            )
-          }
+          {canAccessChat && inputText.length === 0 && (
+            <div className="flex flex-wrap gap-2 p-4 bg-gray-100 border-t">
+              {suggestions.map((suggestion, index) => (
+                <Suggestion
+                  key={index}
+                  suggestion={suggestion}
+                  setValue={setInputText}
+                />
+              ))}
+            </div>
+          )}
+          {!canAccessChat && (
+            <Upsell />
+          )}
           {/* Input */}
           <div className="p-4 border-t flex items-center gap-2">
             <input
@@ -194,7 +215,7 @@ const AdvisorChat = () => {
             <button
               className="bg-navbar text-white px-4 py-2 rounded-md"
               onClick={() => handleSendMessage(inputText)}
-              disabled={loading}
+              disabled={loading || !canAccessChat}
             >
               {loading ? "..." : t("send")}
             </button>

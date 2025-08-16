@@ -124,7 +124,10 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <LoaderCircle className="animate-spin w-8 h-8 text-primary" />
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <LoaderCircle className="animate-spin w-8 h-8 text-primary" />
+        </div>
       </div>
     );
   }

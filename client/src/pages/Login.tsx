@@ -25,6 +25,8 @@ const Login = () => {
   useEffect(() => {
     if (isAuthenticated()) {
       window.location.href = "/dashboard";
+    } else {
+      localStorage.clear();
     }
   }, []);
 
@@ -63,10 +65,8 @@ const Login = () => {
         alert("Login failed. Please try again.");
       }
     } catch (error: any) {
-      if (error.error.status === 404) {
-        setError("Invalid email.");
-      } else if (error.error.status === 401) {
-        setError("Invalid password. Please try again.");
+      if (error.error.status === 404 || error.error.status === 401) {
+        setError("Invalid email or password. Please try again.");
       } else {
       setError("An error occurred while logging in.");
       }

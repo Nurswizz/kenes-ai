@@ -150,4 +150,31 @@ export const userController = {
         .json({ error: error.message || "Internal server error" });
     }
   },
+  canAccessFeature: async (
+    req: Request & { user?: { id: string } },
+    res: Response
+  ): Promise<any> => {
+    const userId = req.user?.id;
+    const { featureKey } = req.body;
+
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User not logged in" });
+    }
+
+    if (!featureKey) {
+      return res.status(400).json({ error: "Feature key is required" });
+    }
+
+    try {
+      const canAccess = await userService.canAccessFeature(userId, featureKey);
+      return res.status(200).json({ canAccess, status: 200 });
+    } catch (error: any) {
+      console.error("Error checking feature access:", error);
+      return res
+        .status(500)
+        .json({ error: error.message || "Internal server error" });
+    }
+  },
 };

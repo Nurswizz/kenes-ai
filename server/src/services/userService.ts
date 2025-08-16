@@ -133,5 +133,23 @@ const userService = {
     const user = await User.findOne({ email });
     return !!user;
   },
+
+  async canAccessFeature(userId: string, featureKey: string) {
+    if (!userId) {
+      throw new Error("Unauthorized: User not logged in");
+    }
+
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if the user has access to the feature
+    const trialsKey = `${featureKey}Trials`;
+    const trialCount = (user as any)[trialsKey] as number;
+    const hasAccess = user.plan === "Pro" || trialCount > 0;
+    return hasAccess;
+  }
+
 };
 export { userService };

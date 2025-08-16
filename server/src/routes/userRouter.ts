@@ -16,5 +16,6 @@ userRouter.put(
   authMiddleware,
   userController.updateEmail
 );
+userRouter.post("/user/can-access-feature", authMiddleware, userController.canAccessFeature);
 
 export default userRouter;

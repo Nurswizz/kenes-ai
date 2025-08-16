@@ -10,6 +10,7 @@ import SimulatorChat from "./pages/SimulatorChat";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Plans from "./pages/Plans";
 
 import "./i18n/i18n";
 
@@ -27,8 +28,7 @@ function App() {
           <Route path="/tools/advisor" element={<ProtectedRoute ><Advisor /></ProtectedRoute>} />
           <Route path="/tools/simulator" element={<ProtectedRoute ><Simulator /></ProtectedRoute>} />
           <Route path="/tools/simulator/:id" element={<SimulatorChat />} />
-          <Route path="/plans" element={<h1>Plans</h1>} />
-
+          <Route path="/plans" element={<Plans />} />
       </Routes>
     </BrowserRouter>
   )

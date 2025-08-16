@@ -90,7 +90,10 @@ const Account = () => {
           ...prev,
           ...updatedData,
         }));
-        localStorage.setItem("user", JSON.stringify({ ...user, ...updatedData }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...user, ...updatedData })
+        );
         setError(null);
         alert("User details updated successfully.");
       } catch (error: any) {
@@ -116,7 +119,15 @@ const Account = () => {
     });
   };
 
-  if (!user) return <div className="text-center p-10">Loading...</div>;
+  if (!user)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <LoaderCircle className="animate-spin w-8 h-8 text-primary" />
+        </div>
+      </div>
+    );
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -170,11 +181,7 @@ const Account = () => {
           <h1 className="text-2xl font-semibold">Plan</h1>
           <h3>{user.plan ? user.plan : "Free"}</h3>
         </div>
-        {error && (
-          <div className="text-[red] mt-2">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-[red] mt-2">{error}</div>}
 
         <button
           onClick={handleEdit}

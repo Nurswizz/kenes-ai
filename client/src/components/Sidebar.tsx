@@ -103,7 +103,6 @@ const Sidebar = () => {
             className="flex flex-col items-center text-sm text-gray-800 hover:text-black"
           >
             {icon}
-            <span className="text-xs">{label}</span>
           </button>
         ))}
       </div>

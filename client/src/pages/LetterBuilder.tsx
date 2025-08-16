@@ -1,9 +1,15 @@
 import Sidebar from "../components/Sidebar";
 import Suggestion from "../components/Suggestion";
+import Upsell from "../components/Upsell";
 import useApi from "../hooks/useApi";
 import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+interface AccessResponse {
+  canAccess: boolean;
+  status: number;
+}
 
 const LetterBuilder = () => {
   const { fetchData } = useApi();
@@ -14,6 +20,7 @@ const LetterBuilder = () => {
   const [recipientName, setRecipientName] = useState(t("recipient1"));
   const [sender, setSender] = useState("");
   const [customRecipient, setCustomRecipient] = useState("");
+  const [canAccessLetter, setCanAccessLetter] = useState(true);
   const suggestions = [t("suggestion1"), t("suggestion2"), t("suggestion3")];
   const firstName =
     JSON.parse(localStorage.getItem("user") || "{}").firstName || "";
@@ -26,6 +33,19 @@ const LetterBuilder = () => {
     t("recipient3"),
     t("other"),
   ];
+  useEffect(() => {
+    const checkFeatureAccess = async () => {
+      const response = (await fetchData("/user/can-access-feature", {
+        method: "POST",
+        body: JSON.stringify({ featureKey: "letter" }),
+        headers: { "Content-Type": "application/json" },
+      })) as AccessResponse;
+      console.log(response);
+      setCanAccessLetter(response.canAccess);
+    };
+
+    checkFeatureAccess();
+  }, []);
   useEffect(() => {
     setSender(`${firstName} ${lastName}`);
   }, [firstName, lastName]);
@@ -84,9 +104,6 @@ const LetterBuilder = () => {
               <label className="text-lg font-semibold mb-1">
                 {t("recipient-name")}
               </label>
-              {
-                // it should consist of options recipientSuggestions
-              }
               <select
                 className="border-2 border-gray-300 p-2 rounded-lg"
                 name="recipientName"
@@ -142,9 +159,7 @@ const LetterBuilder = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
-
-                {/* Suggestion Box */}
-                {message.length === 0 && (
+                {canAccessLetter && message.length === 0 && (
                   <div className="absolute bottom-4 left-0 w-full flex justify-center gap-1 px-2 max-md:flex-wrap">
                     {suggestions.map((suggestion, index) => (
                       <Suggestion
@@ -155,12 +170,16 @@ const LetterBuilder = () => {
                     ))}
                   </div>
                 )}
+                {
+                  canAccessLetter ? null : <Upsell />
+                }
               </div>
             </div>
 
             <button
               type="submit"
               className="bg-navbar p-2 rounded-lg hover:bg-[#a4bcff] transition-colors w-fit font-semibold"
+              disabled={loading || !canAccessLetter}
             >
               {loading ? (
                 <Loader2Icon className="animate-spin h-5 w-5 text-white" />

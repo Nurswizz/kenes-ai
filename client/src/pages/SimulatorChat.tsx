@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import useApi from "../hooks/useApi";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
+import Upsell from "../components/Upsell";
 interface IChatMessage {
   _id?: object;
   from: "system" | "user" | "bot";
@@ -13,6 +13,11 @@ interface IChatMessage {
   chatType?: "advisor" | "simulator";
   createdAt?: Date;
   meta?: Record<string, any>;
+}
+
+interface AccessResponse {
+  canAccess: boolean;
+  status: number;
 }
 
 const SimulatorChat = () => {
@@ -26,11 +31,11 @@ const SimulatorChat = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [scenario, setScenario] = useState<string>("");
   const { t } = useTranslation();
+  const [canAccessChat, setCanAccessChat] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
     if (!id) return;
@@ -61,6 +66,20 @@ const SimulatorChat = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const checkFeatureAccess = async () => {
+      const response = (await fetchData("/user/can-access-feature", {
+        method: "POST",
+        body: JSON.stringify({ featureKey: "chat" }),
+        headers: { "Content-Type": "application/json" },
+      })) as AccessResponse;
+      console.log(response);
+      setCanAccessChat(response.canAccess);
+    };
+
+    checkFeatureAccess();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -151,7 +170,9 @@ const SimulatorChat = () => {
               </>
             )}
           </div>
-
+            {
+              canAccessChat ? null : <Upsell />
+            }
           {/* Input */}
           <div className="p-4 border-t flex items-center gap-2">
             <input
@@ -172,7 +193,7 @@ const SimulatorChat = () => {
             <button
               className="bg-navbar text-white px-4 py-2 rounded-md"
               onClick={() => handleSendMessage(inputText)}
-              disabled={loading}
+              disabled={loading || !canAccessChat}
             >
               {loading ? "..." : t("send")}
             </button>
