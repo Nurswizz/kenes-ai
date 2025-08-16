@@ -40,7 +40,7 @@ const Plans = () => {
   return (
     <div className="flex h-full lg:h-screen flex-col lg:flex-row">
       <Sidebar />
-      <div className="flex-1 p-6 flex items-center flex-col">
+      <div className="flex-1 flex flex-col p-6 sm:p-10 md:p-14 lg:p-16">
         <h1 className="text-4xl font-bold">Plans</h1>
         <p>Choose a plan that fits your needs.</p>
         <div className="flex h-full justify-evenly items-center w-full px-32 pt-8 lg:pt-0 flex-col lg:flex-row gap-8">

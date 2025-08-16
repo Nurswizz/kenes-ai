@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import useApi from "../hooks/useApi";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Triangle } from "lucide-react";
 
 type FeatureKey = "letter" | "style" | "chat";
 
@@ -52,7 +53,7 @@ const Activity = ({ title, date, meta }: IActivity) => {
   } else if (localStorage.getItem("language") === "en") {
     message = `Used feature ${formattedTitle}`;
   }
-  const formattedDate = date.toUTCString();
+  const formattedDate = date.toLocaleDateString();
   return (
     <div
       onClick={() => meta?.pdf_url && window.open(meta.pdf_url, "_blank")}
@@ -77,7 +78,11 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { fetchData } = useApi();
   const { t } = useTranslation();
-  
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll((prev) => !prev);
+  };
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -150,18 +155,33 @@ const Dashboard = () => {
 
         {/* Recent Activity */}
         <div className="flex flex-col gap-3 mt-6">
-          <h1 className="text-3xl sm:text-4xl font-bold">{t("recent-activity")}</h1>
+          <button className="flex items-center gap-2 py-2" onClick={toggleShowAll}>
+              <h1 className="text-3xl sm:text-4xl font-bold">{t("recent-activity")}</h1>
+              <Triangle size={24} className={`transform ${showAll ? "rotate-180" : ""} mt-2`} />
+          </button>
           <div className="flex flex-col gap-5 mb-12">
             {recentActivity.length > 0 ? (
-              recentActivity.map((activity) => (
-                <Activity
-                  id={activity.id}
-                  key={activity.id}
-                  title={activity.title}
-                  date={activity.date}
-                  meta={activity.meta}
-                />
-              ))
+              showAll ? (
+                recentActivity.map((activity) => (
+                  <Activity
+                    id={activity.id}
+                    key={activity.id}
+                    title={activity.title}
+                    date={activity.date}
+                    meta={activity.meta}
+                  />
+                ))
+              ) : (
+                recentActivity.slice(0, 5).map((activity) => (
+                  <Activity
+                    id={activity.id}
+                    key={activity.id}
+                    title={activity.title}
+                    date={activity.date}
+                    meta={activity.meta}
+                  />
+                ))
+              )
             ) : (
               <div className="text-gray-500">No recent activity</div>
             )}

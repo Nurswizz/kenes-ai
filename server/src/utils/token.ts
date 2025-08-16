@@ -34,6 +34,9 @@ const verifyToken = (token: string, type: "access" | "refresh") => {
     };
     return decoded;
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return null;
+    }
     console.error("Error verifying token:", error);
     return null;
   }

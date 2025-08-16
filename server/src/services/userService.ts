@@ -147,7 +147,8 @@ const userService = {
     // Check if the user has access to the feature
     const trialsKey = `${featureKey}Trials`;
     const trialCount = (user as any)[trialsKey] as number;
-    const hasAccess = user.plan === "Pro" || trialCount > 0;
+    const plan = user.metadata?.subscriptionData?.plan;
+    const hasAccess = plan === "Pro" || trialCount > 0;
     return hasAccess;
   }
 
